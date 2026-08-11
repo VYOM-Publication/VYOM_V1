@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Archival Modern CSS Custom Properties ──────────────────────────────────── */
+:root {
+  /* Brand palette */
+  --color-forest-green: #18362F;
+  --color-deep-green:   #10211D;
+  --color-gold:         #DAB15C;
+  --color-ivory:        #F6F0E6;
+  --color-sand:         #B8A891;
+  --color-dark-neutral: #0B1311;
+  --color-text-primary: #111111;
+  --color-text-secondary: #4A4A4A;
+  --color-success:      #2E7D32;
+  --color-warning:      #F9A825;
+  --color-error:        #C62828;
+
+  /* Semantic design tokens (hsl values for Tailwind CSS var usage) */
+  --background:         0 0% 100%;
+  --foreground:         222.2 84% 4.9%;
+  --muted:              210 40% 96.1%;
+  --muted-foreground:   215.4 16.3% 46.9%;
+  --border:             214.3 31.8% 91.4%;
+  --input:              214.3 31.8% 91.4%;
+  --primary:            221.2 83.2% 53.3%;
+  --primary-foreground: 210 40% 98%;
+  --radius:             0.5rem;
+}
+
+/* ── Dark Mode ───────────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-forest-green: #2A5247;
+  --color-deep-green:   #18362F;
+  --color-ivory:        #1A1A1A;
+  --color-sand:         #3A3530;
+  --color-text-primary: #F6F0E6;
+  --color-text-secondary: #B8A891;
+
+  --background:         222.2 84% 4.9%;
+  --foreground:         210 40% 98%;
+  --muted:              217.2 32.6% 17.5%;
+  --muted-foreground:   215 20.2% 65.1%;
+  --border:             217.2 32.6% 17.5%;
+  --input:              217.2 32.6% 17.5%;
+}
+
+/* ── Base Styles ─────────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter Variable', system-ui, sans-serif;
+    color: var(--color-text-primary);
+    background-color: var(--color-ivory);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+}
+
+/* ── Arch Clip-Path Motif ────────────────────────────────────────────────────── */
+@layer utilities {
+  .arch-clip {
+    clip-path: ellipse(100% 100% at 50% 100%);
+    overflow: hidden;
+  }
+
+  /* Fallback for browsers without clip-path support */
+  @supports not (clip-path: ellipse(100% 100% at 50% 100%)) {
+    .arch-clip {
+      border-radius: 50% 50% 0 0 / 20% 20% 0 0;
+      overflow: hidden;
+    }
+  }
+
+  .arch-divider {
+    clip-path: ellipse(55% 100% at 50% 0%);
+    overflow: hidden;
+  }
+
+  /* ── Shimmer animation helper ──────────────────────────────────────────── */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      #F6F0E6 25%,
+      #B8A891 50%,
+      #F6F0E6 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1500ms linear infinite;
+  }
+
+  /* ── Gold focus ring ───────────────────────────────────────────────────── */
+  .focus-gold {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2;
+  }
+
+  /* ── Hide scrollbar (cross-browser) ────────────────────────────────────── */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.next/
+.turbo/
+# Exclude all .env files regardless of naming convention:
+#   *.env  catches  production.env, staging.env, etc.
+#   **/.env catches  apps/api/.env, apps/web/.env, etc. (dotfiles named .env)
+*.env
+**/.env
+*.env.local
+*.env.production
+coverage/
+logs/
+*.log
+.DS_Store
+Thumbs.db
