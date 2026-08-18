@@ -47,6 +47,29 @@ function optionalEnv(key: string, fallback: string): string {
   return process.env[key] ?? fallback;
 }
 
+function resolveRedisUrl(): string {
+  const explicitRedisUrl = process.env.REDIS_URL;
+  if (explicitRedisUrl && !explicitRedisUrl.startsWith('<')) {
+    return explicitRedisUrl;
+  }
+
+  const restUrl = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (restUrl && token) {
+    try {
+      const parsed = new URL(restUrl);
+      const host = parsed.hostname;
+      const port = parsed.port || '6379';
+      return `rediss://:${encodeURIComponent(token)}@${host}:${port}`;
+    } catch {
+      // Fall through to the default if parsing fails.
+    }
+  }
+
+  return optionalEnv('REDIS_URL', 'redis://localhost:6379');
+}
+
 export const config = {
   env: optionalEnv('NODE_ENV', 'development'),
   isProduction: IS_PRODUCTION,
@@ -71,8 +94,12 @@ export const config = {
     /**
      * Redis is optional in development — the redis module falls back to an
      * in-process memory mock when the connection cannot be established.
+     *
+     * Upstash exposes REST credentials, but the app uses ioredis over a TCP
+     * Redis URL. If REDIS_URL is not set, we derive a TLS Redis URL from the
+     * UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN values automatically.
      */
-    url: optionalEnv('REDIS_URL', 'redis://localhost:6379'),
+    url: resolveRedisUrl(),
   },
 
   jwt: {
