@@ -1,6 +1,6 @@
 'use client';
 
-import { useDemoAuth } from '@/lib/demo-auth';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import Link from 'next/link';
 import { 
   FileText, Users, Layers, BookOpen, Clock, AlertTriangle, 
@@ -12,7 +12,7 @@ import { EditorialPipeline } from '@/components/editor/EditorialPipeline';
 import { SectionHeader } from '@/components/reader/SectionHeader';
 
 export default function EditorDashboardPage() {
-  const { session } = useDemoAuth();
+  const { user } = useAuthStore();
 
   const priorityTasks = [
     {
@@ -67,7 +67,7 @@ export default function EditorDashboardPage() {
   return (
     <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10">
       {/* 1. Welcome Hero */}
-      <EditorHero name={session?.name ?? 'Dr. Vikramaditya Sen'} />
+      <EditorHero name={user?.fullName ?? 'Editor'} />
 
       {/* 2. Global Editorial Pipeline Visual Progress */}
       <div className="rounded-3xl border border-sand/40 bg-white p-6 shadow-sm mb-10">
@@ -139,7 +139,7 @@ export default function EditorDashboardPage() {
                 { label: 'Issues & Volumes', icon: Layers, href: '/editor/issues' },
                 { label: 'Communications', icon: MessageSquare, href: '/editor/communications' },
                 { label: 'Archives', icon: BookOpen, href: '/editor/archives' },
-                { label: 'Announcements', icon: Megaphone, href: '/admin/announcements' },
+                { label: 'Announcements', icon: Megaphone, href: '/editor/communications' },
                 { label: 'Editorial Decisions', icon: CheckCircle2, href: '/editor/submissions' },
                 { label: 'Profile Settings', icon: Users, href: '/editor/profile' },
               ].map(action => {

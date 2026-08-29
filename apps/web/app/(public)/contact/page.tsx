@@ -98,7 +98,7 @@ export default function ContactPage() {
       </section>
 
       {/* ── CONTACT INFO CARDS ────────────────────────────────────────────── */}
-      <section className="py-12 px-6">
+      <section className="py-16 px-6 bg-ivory">
         <div className="mx-auto max-w-4xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { icon: Mail,  label: 'Email Us',     primary: 'ORGANIZATIONVYOM@gmail.com', secondary: 'We reply within 2–3 business days', href: 'mailto:ORGANIZATIONVYOM@gmail.com' },
@@ -126,7 +126,7 @@ export default function ContactPage() {
       </section>
 
       {/* ── FORM + SIDEBAR ────────────────────────────────────────────────── */}
-      <section className="px-6 pb-20">
+      <section className="py-16 px-6 pb-20 bg-sand/10">
         <div className="mx-auto max-w-4xl flex flex-col lg:flex-row gap-10">
 
           {/* Contact Form */}

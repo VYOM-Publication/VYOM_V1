@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { Logo } from '@/components/common/Logo';
-import { useDemoAuth } from '@/lib/demo-auth';
+import { useAuthStore } from '@/lib/stores/auth.store';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { Role } from '@vyom/constants';
 import SearchBar from './SearchBar';
 import NotificationBell from './NotificationBell';
 import UserMenu from './UserMenu';
@@ -14,7 +16,7 @@ const WEBSITE_LINKS = [
   { label: 'HOME',            href: '/' },
   { label: 'ABOUT US',        href: '/about' },
   { label: 'BOOKS',           href: '/books' },
-  { label: 'CATEGORIES',      href: '/books' },
+  { label: 'GUIDELINES',      href: '/guidelines' },
   { label: 'EDITORIAL BOARD', href: '/editorial-board' },
   { label: 'BLOGS',           href: '/blogs' },
 ];
@@ -34,7 +36,21 @@ export default function Navbar() {
   const editorMenuRef = useRef<HTMLLIElement>(null);
   const [editorMenuOpen, setEditorMenuOpen] = useState(false);
 
-  const { session, logout } = useDemoAuth();
+  const { user, isAuthenticated } = useAuthStore();
+  const { logout } = useAuth();
+
+  // Derive role string from the user's highest role for nav rendering
+  const role = user?.roles?.includes(Role.ADMIN)    ? 'admin'
+             : user?.roles?.includes(Role.EDITOR)   ? 'editor'
+             : user?.roles?.includes(Role.REVIEWER) ? 'reviewer'
+             : user?.roles?.includes(Role.AUTHOR)   ? 'author'
+             : user?.roles?.includes(Role.MEMBER)   ? 'member'
+             : null;
+
+  // Normalised session shape used throughout the navbar JSX below
+  const session = isAuthenticated && user && role
+    ? { name: user.fullName, role, dashboard: `/${role}/dashboard` }
+    : null;
 
   useEffect(() => { setOpen(false); }, [pathname]);
 
@@ -82,7 +98,7 @@ export default function Navbar() {
         <Logo size={36} />
 
         {/* Desktop nav links */}
-        <ul className="hidden lg:flex items-center gap-6" role="list">
+        <ul className="hidden lg:flex items-center gap-5" role="list">
           {WEBSITE_LINKS.map(({ label, href }) => {
             const active = isActive(href);
             return (
@@ -219,7 +235,7 @@ export default function Navbar() {
         </ul>
 
         {/* Desktop right-side controls */}
-        <div className="hidden lg:flex items-center gap-4 shrink-0">
+        <div className="hidden lg:flex items-center gap-3 shrink-0">
           <SearchBar />
           {session ? (
             <div className="flex items-center gap-3">

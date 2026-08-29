@@ -1,8 +1,7 @@
 'use client';
 
-// TODO: Replace demo data with GET /api/v1/profile and PATCH /api/v1/profile once backend credentials are available.
-
 import { useState } from 'react';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import { DEMO_REVIEWER_PROFILE } from '@/lib/demo-data';
 import { 
   CheckCircle, User, Award, GraduationCap, MapPin, 
@@ -10,7 +9,12 @@ import {
 } from 'lucide-react';
 
 export default function ReviewerProfilePage() {
-  const [form, setForm] = useState(DEMO_REVIEWER_PROFILE);
+  const { user } = useAuthStore();
+  const [form, setForm] = useState({
+    ...DEMO_REVIEWER_PROFILE,
+    fullName: user?.fullName ?? DEMO_REVIEWER_PROFILE.fullName,
+    email: user?.email ?? DEMO_REVIEWER_PROFILE.email,
+  });
   const [saved, setSaved] = useState(false);
   
   const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }));

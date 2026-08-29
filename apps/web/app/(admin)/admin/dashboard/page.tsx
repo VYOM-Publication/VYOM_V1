@@ -1,6 +1,6 @@
 'use client';
 
-import { useDemoAuth } from '@/lib/demo-auth';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import Link from 'next/link';
 import { Users, FileText, CreditCard, BarChart2, ArrowRight, ScrollText, Megaphone } from 'lucide-react';
 import { DEMO_USERS, DEMO_SUBMISSIONS, DEMO_PAYMENTS } from '@/lib/demo-data';
@@ -12,13 +12,13 @@ const totalRevenue = DEMO_PAYMENTS
   .reduce((sum, p) => sum + p.amount, 0);
 
 export default function AdminDashboardPage() {
-  const { session } = useDemoAuth();
+  const { user } = useAuthStore();
 
   return (
     <>
       <PageHeader
         title="Admin Control Panel"
-        subtitle={`Platform Governance · ${session?.name ?? 'Administrator'}`}
+        subtitle={`Platform Governance · ${user?.fullName ?? 'Administrator'}`}
         role="admin"
       />
 

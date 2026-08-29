@@ -1,11 +1,10 @@
 'use client';
 
-// TODO: Replace demo data with GET /api/v1/profile and PATCH /api/v1/profile once backend credentials are available.
-
 import { useState } from 'react';
-import { 
-  User, GraduationCap, MapPin, Mail, 
-  BookOpen, CheckCircle, Shield, Award, Layers 
+import { useAuthStore } from '@/lib/stores/auth.store';
+import {
+  GraduationCap, Mail,
+  CheckCircle, Shield,
 } from 'lucide-react';
 
 const DEMO_EDITOR_PROFILE = {
@@ -26,7 +25,12 @@ const DEMO_EDITOR_PROFILE = {
 };
 
 export default function EditorProfilePage() {
-  const [form, setForm] = useState(DEMO_EDITOR_PROFILE);
+  const { user } = useAuthStore();
+  const [form, setForm] = useState({
+    ...DEMO_EDITOR_PROFILE,
+    fullName: user?.fullName ?? DEMO_EDITOR_PROFILE.fullName,
+    email: user?.email ?? DEMO_EDITOR_PROFILE.email,
+  });
   const [saved, setSaved] = useState(false);
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));

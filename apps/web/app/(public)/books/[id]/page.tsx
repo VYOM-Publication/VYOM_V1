@@ -3,14 +3,17 @@
 // TODO: Replace demo data with GET /api/v1/books/:id once backend credentials are available.
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BookCard } from '@/components/common/BookCard';
 import { CATALOGUE } from '@/lib/books-data';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import {
   BookOpen, User, Calendar, Tag, Star,
-  CheckCircle, ArrowLeft, ShoppingCart, Share2,
+  CheckCircle, ArrowLeft, Download, Eye,
+  Share2, Lock, ArrowRight, X, Check,
 } from 'lucide-react';
 
 function StarRating({ rating }: { rating: number }) {
@@ -25,15 +28,147 @@ function StarRating({ rating }: { rating: number }) {
 }
 
 export default function BookDetailPage({ params }: { params: { id: string } }) {
-  const book = CATALOGUE.find((b) => b.id === params.id);
-  if (!book) notFound();
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
+
+  const bookFound = CATALOGUE.find((b) => b.id === params.id);
+  if (!bookFound) notFound();
+  const book = bookFound!;
 
   const related = CATALOGUE
     .filter((b) => b.category === book.category && b.id !== book.id)
     .slice(0, 4);
 
+  const [previewOpen, setPreviewOpen]         = useState(false);
+  const [paymentConfirm, setPaymentConfirm]   = useState(false);
+  const [authModalOpen, setAuthModalOpen]     = useState(false);
+  const [shareToast, setShareToast]           = useState(false);
+  const [downloadToast, setDownloadToast]     = useState(false);
+
+  // Check if this book has been purchased (stored in localStorage in demo)
+  const purchaseKey = `vyom-book-purchased-${book.id}`;
+  const [isPurchased, setIsPurchased] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return !!localStorage.getItem(purchaseKey);
+  });
+
+  function handleShare() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      setShareToast(true);
+      setTimeout(() => setShareToast(false), 2500);
+    });
+  }
+
+  function handleDownload() {
+    if (book.free || isPurchased) {
+      // Demo — no real file, just show a toast
+      setDownloadToast(true);
+      setTimeout(() => setDownloadToast(false), 3000);
+    } else if (!isAuthenticated) {
+      // Prompt user to login first before payment
+      setAuthModalOpen(true);
+    } else {
+      // Show payment confirmation modal
+      setPaymentConfirm(true);
+    }
+  }
+
+  function handlePaymentProceed() {
+    setPaymentConfirm(false);
+    if (!isAuthenticated) {
+      router.push(`/login?from=/books/${book.id}/payment`);
+      return;
+    }
+    router.push(`/books/${book.id}/payment`);
+  }
+
   return (
     <>
+      {/* Toast notifications */}
+      {shareToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full bg-forest-green text-ivory px-5 py-3 text-sm font-semibold shadow-card-hover animate-fade-in">
+          <Check className="h-4 w-4 text-ochre" /> Link copied to clipboard
+        </div>
+      )}
+      {downloadToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full bg-forest-green text-ivory px-5 py-3 text-sm font-semibold shadow-card-hover animate-fade-in">
+          <Download className="h-4 w-4 text-ochre" /> Download started — demo mode
+        </div>
+      )}
+
+      {/* Auth required modal */}
+      {authModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6"
+          role="dialog" aria-modal="true" aria-label="Login required">
+          <div className="bg-white rounded-2xl border border-sand/40 shadow-card-hover p-8 max-w-sm w-full flex flex-col gap-5">
+            <div className="flex items-start justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ochre/10">
+                <Lock className="h-6 w-6 text-ochre" />
+              </div>
+              <button onClick={() => setAuthModalOpen(false)}
+                className="text-forest-green/30 hover:text-forest-green transition-colors"
+                aria-label="Close">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div>
+              <h2 className="font-display text-xl font-bold text-forest-green">Login Required</h2>
+              <p className="mt-2 text-sm text-forest-green/60 leading-relaxed">
+                You haven&apos;t logged in yet. You need to log in first to make a payment and download <strong className="text-forest-green">&quot;{book.title}&quot;</strong>.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setAuthModalOpen(false)}
+                className="flex-1 rounded-full border border-sand/50 py-2.5 text-sm font-semibold text-forest-green/60 hover:border-forest-green hover:text-forest-green transition-colors">
+                Cancel
+              </button>
+              <button onClick={() => { setAuthModalOpen(false); router.push(`/login?from=/books/${book.id}/payment`); }}
+                className="flex-1 rounded-full bg-ochre py-2.5 text-sm font-semibold text-ivory hover:bg-ochre/90 transition-colors">
+                Log In Now →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment confirmation modal */}
+      {paymentConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-6"
+          role="dialog" aria-modal="true" aria-label="Purchase confirmation">
+          <div className="bg-white rounded-2xl border border-sand/40 shadow-card-hover p-8 max-w-sm w-full flex flex-col gap-5">
+            <div className="flex items-start justify-between">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-ochre/10">
+                <Lock className="h-6 w-6 text-ochre" />
+              </div>
+              <button onClick={() => setPaymentConfirm(false)}
+                className="text-forest-green/30 hover:text-forest-green transition-colors"
+                aria-label="Close">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div>
+              <h2 className="font-display text-xl font-bold text-forest-green">Purchase Required</h2>
+              <p className="mt-2 text-sm text-forest-green/60 leading-relaxed">
+                <strong className="text-forest-green">&quot;{book.title}&quot;</strong> requires a one-time payment of{' '}
+                <strong className="text-ochre">₹{book.price}</strong> to download.
+                Would you like to continue to the payment page?
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setPaymentConfirm(false)}
+                className="flex-1 rounded-full border border-sand/50 py-2.5 text-sm font-semibold text-forest-green/60 hover:border-forest-green hover:text-forest-green transition-colors">
+                Cancel
+              </button>
+              <button onClick={handlePaymentProceed}
+                className="flex-1 rounded-full bg-ochre py-2.5 text-sm font-semibold text-ivory hover:bg-ochre/90 transition-colors">
+                Yes, Proceed →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="bg-white border-b border-sand/20">
         <div className="mx-auto max-w-7xl px-6 py-3 flex items-center gap-2 text-xs text-forest-green/50">
@@ -46,15 +181,16 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
       </nav>
 
       {/* Main */}
-      <section className="py-16 px-6">
+      <section className="py-16 px-6 bg-ivory">
         <div className="mx-auto max-w-7xl">
           <Link href="/books" className="inline-flex items-center gap-2 text-sm text-forest-green/60 hover:text-forest-green transition-colors mb-8">
             <ArrowLeft className="h-4 w-4" /> Back to Books
           </Link>
 
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Left: Cover + meta */}
+            {/* Left: Cover + actions */}
             <div className="lg:col-span-1 flex flex-col gap-6">
+              {/* Cover */}
               <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-forest-green/10 to-forest-green/25 aspect-[3/4] flex items-center justify-center">
                 <div className="text-center px-8">
                   <BookOpen className="h-20 w-20 text-forest-green/25 mx-auto mb-4" aria-hidden />
@@ -62,22 +198,53 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
                 </div>
               </div>
 
-              {/* Price + CTA */}
+              {/* Action card */}
               <div className="rounded-xl border border-sand/30 bg-white p-6 flex flex-col gap-4">
-                <div className="flex items-baseline gap-2">
-                  <span className="font-display text-3xl font-bold text-forest-green">₹{book.price}</span>
-                  <span className="text-sm text-forest-green/40 line-through">₹{Math.round(book.price * 1.2)}</span>
-                  <Badge label="17% off" variant="success" />
+                {/* Price / Free badge */}
+                <div className="flex items-baseline gap-3">
+                  {book.free ? (
+                    <span className="font-display text-2xl font-bold text-green-600">Free</span>
+                  ) : isPurchased ? (
+                    <div className="flex items-center gap-2">
+                      <span className="font-display text-2xl font-bold text-forest-green">₹{book.price}</span>
+                      <span className="rounded-full bg-green-50 border border-green-200 px-2.5 py-0.5 text-xs font-bold text-green-600">Purchased</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="font-display text-3xl font-bold text-forest-green">₹{book.price}</span>
+                      <span className="text-sm text-forest-green/40 line-through">₹{Math.round(book.price * 1.2)}</span>
+                      <Badge label="17% off" variant="success" />
+                    </>
+                  )}
                 </div>
-                <Button variant="primary" size="lg" className="w-full gap-2">
-                  <ShoppingCart className="h-4 w-4" /> Buy Now
-                </Button>
-                <Button variant="secondary" size="lg" className="w-full">
-                  Add to Wishlist
-                </Button>
-                <button className="flex items-center justify-center gap-2 text-sm text-forest-green/50 hover:text-forest-green transition-colors">
-                  <Share2 className="h-4 w-4" /> Share this book
+
+                {/* Download button */}
+                <button
+                  onClick={handleDownload}
+                  className="w-full flex items-center justify-center gap-2 rounded-full bg-forest-green py-3 text-sm font-bold text-ivory hover:bg-forest-green/90 transition-colors"
+                >
+                  <Download className="h-4 w-4" />
+                  {book.free || isPurchased ? 'Download' : `Download — ₹${book.price}`}
                 </button>
+
+                {/* Preview button */}
+                <button
+                  onClick={() => setPreviewOpen(!previewOpen)}
+                  className="w-full flex items-center justify-center gap-2 rounded-full border border-ochre/40 py-3 text-sm font-bold text-ochre hover:bg-ochre/5 transition-colors"
+                >
+                  <Eye className="h-4 w-4" />
+                  {previewOpen ? 'Close Preview' : 'Preview'}
+                </button>
+
+                {/* Share */}
+                <div className="relative">
+                  <button
+                    onClick={handleShare}
+                    className="w-full flex items-center justify-center gap-2 text-sm text-forest-green/50 hover:text-forest-green transition-colors py-1"
+                  >
+                    <Share2 className="h-4 w-4" /> Share this book
+                  </button>
+                </div>
               </div>
 
               {/* Book meta */}
@@ -85,15 +252,7 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
                 <h3 className="text-xs font-bold uppercase tracking-widest text-forest-green/40 mb-4">Book Details</h3>
                 <dl className="flex flex-col gap-3">
                   {[
-                    { 
-                      icon: User,     
-                      label: 'Author',   
-                      value: (
-                        <Link href="/authors/dr-ananya-sharma" className="text-ochre hover:underline font-bold">
-                          {book.author}
-                        </Link>
-                      ) 
-                    },
+                    { icon: User,     label: 'Author',   value: book.author },
                     { icon: Calendar, label: 'Year',     value: String(book.year) },
                     { icon: Tag,      label: 'Category', value: book.category },
                     { icon: BookOpen, label: 'Pages',    value: String(book.pages) },
@@ -115,7 +274,14 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
             {/* Right: Content */}
             <div className="lg:col-span-2 flex flex-col gap-8">
               <div>
-                <Badge label={book.category} variant="info" className="mb-3" />
+                <div className="flex items-center gap-3 mb-3">
+                  <Badge label={book.category} variant="info" />
+                  {book.free ? (
+                    <span className="rounded-full bg-green-50 border border-green-200 px-3 py-0.5 text-xs font-bold text-green-600">Open Access</span>
+                  ) : (
+                    <span className="rounded-full bg-ochre/10 border border-ochre/30 px-3 py-0.5 text-xs font-bold text-ochre">Premium</span>
+                  )}
+                </div>
                 <h1 className="font-display text-4xl font-bold text-forest-green leading-tight">{book.title}</h1>
                 <p className="mt-2 text-base text-forest-green/60">by {book.author}</p>
                 <div className="mt-3 flex items-center gap-4 flex-wrap">
@@ -125,6 +291,73 @@ export default function BookDetailPage({ params }: { params: { id: string } }) {
                   <span className="text-sm text-forest-green/50">{book.pages} pages</span>
                 </div>
               </div>
+
+              {/* Preview panel — shown when preview is open */}
+              {previewOpen && (
+                <div className="rounded-2xl border border-ochre/30 bg-ochre/5 overflow-hidden">
+                  <div className="px-6 py-4 border-b border-ochre/20 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Eye className="h-4 w-4 text-ochre" />
+                      <span className="text-sm font-bold text-ochre uppercase tracking-widest">Preview — First Pages</span>
+                    </div>
+                    <button onClick={() => setPreviewOpen(false)} className="text-ochre/50 hover:text-ochre transition-colors" aria-label="Close preview">
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  {/* Preview text — 1–2 pages worth */}
+                  <div className="px-6 py-6">
+                    <p className="text-sm text-forest-green/80 leading-relaxed font-body">
+                      {book.previewText}
+                    </p>
+
+                    {/* Blurred continuation + gate */}
+                    <div className="relative mt-4">
+                      <p className="text-sm text-forest-green/60 leading-relaxed select-none blur-sm pointer-events-none" aria-hidden>
+                        The analysis continues in subsequent chapters with an examination of primary source materials drawn from archives across four countries. The methodology employed combines close textual reading with quantitative corpus analysis, allowing for both interpretive depth and empirical breadth. Chapter three introduces the theoretical framework that will organise the remainder of the study, drawing on recent scholarship to develop an original analytical model...
+                      </p>
+                      {/* Overlay gate */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-t from-ochre/5 to-transparent rounded-xl">
+                        <div className="text-center px-6 py-4">
+                          {book.free ? (
+                            <div className="flex flex-col items-center gap-3">
+                              <p className="text-sm font-semibold text-forest-green">This book is free to read in full.</p>
+                              <button
+                                onClick={handleDownload}
+                                className="inline-flex items-center gap-2 rounded-full bg-ochre px-6 py-2.5 text-sm font-bold text-ivory hover:bg-ochre/90 transition-colors"
+                              >
+                                <Download className="h-4 w-4" /> Read More — Download Free
+                              </button>
+                            </div>
+                          ) : isPurchased ? (
+                            <div className="flex flex-col items-center gap-3">
+                              <p className="text-sm font-semibold text-forest-green">You own this book.</p>
+                              <button
+                                onClick={handleDownload}
+                                className="inline-flex items-center gap-2 rounded-full bg-forest-green px-6 py-2.5 text-sm font-bold text-ivory hover:bg-forest-green/90 transition-colors"
+                              >
+                                <Download className="h-4 w-4" /> Download Full Book
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center gap-3">
+                              <Lock className="h-8 w-8 text-ochre mx-auto" />
+                              <p className="text-sm font-bold text-forest-green">Full content requires purchase</p>
+                              <p className="text-xs text-forest-green/60">Purchase this book for ₹{book.price} to access the complete content.</p>
+                              <button
+                                onClick={handlePaymentProceed}
+                                className="inline-flex items-center gap-2 rounded-full bg-ochre px-6 py-2.5 text-sm font-bold text-ivory hover:bg-ochre/90 transition-colors"
+                              >
+                                Purchase &amp; Read — ₹{book.price} <ArrowRight className="h-4 w-4" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div>
                 <h2 className="font-display text-xl font-bold text-forest-green mb-3">About This Book</h2>

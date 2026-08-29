@@ -27,7 +27,7 @@ export default function GuidelinesPage() {
       </section>
 
       {/* ── MANUSCRIPT CATEGORIES ─────────────────────────────────────────── */}
-      <section className="py-12 px-6">
+      <section className="py-16 px-6 bg-ivory">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-2xl border border-sand/40 bg-ivory/80 p-8">
             <span className="text-xs font-bold uppercase tracking-widest text-ochre">Manuscript Categories</span>
@@ -53,7 +53,7 @@ export default function GuidelinesPage() {
       </section>
 
       {/* ── CORE REQUIREMENTS ─────────────────────────────────────────────── */}
-      <section className="py-4 px-6 pb-10">
+      <section className="py-16 px-6 bg-sand/10">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-2xl border border-sand/40 bg-ivory/80 p-8">
             <span className="text-xs font-bold uppercase tracking-widest text-ochre">Core Requirements</span>
@@ -84,7 +84,7 @@ export default function GuidelinesPage() {
       </section>
 
       {/* ── FORMATTING SNAPSHOT ───────────────────────────────────────────── */}
-      <section className="py-4 px-6 pb-10">
+      <section className="py-16 px-6 bg-ivory">
         <div className="mx-auto max-w-4xl">
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
@@ -101,7 +101,7 @@ export default function GuidelinesPage() {
               { label: 'SPACING',          value: '1.5 line spacing throughout' },
               { label: 'MARGINS',          value: '2.5 cm on all sides' },
               { label: 'TABLES & FIGURES', value: 'Include legends and source notes' },
-              { label: 'ACCEPTED FILES',   value: 'DOCX or PDF, max 20 MB' },
+              { label: 'ACCEPTED FILES',   value: 'DOCX (MS Word) only, max 20 MB' },
             ].map(({ label, value }) => (
               <div key={label}
                 className="rounded-2xl border border-sand/40 bg-ivory px-4 pt-5 pb-6 flex flex-col gap-3">
@@ -114,7 +114,7 @@ export default function GuidelinesPage() {
       </section>
 
       {/* ── FINAL AUTHOR DECLARATION ──────────────────────────────────────── */}
-      <section className="py-4 px-6 pb-16">
+      <section className="py-16 px-6 bg-sand/10">
         <div className="mx-auto max-w-4xl">
           <div className="rounded-2xl border border-sand/40 bg-ivory/80 p-8 grid md:grid-cols-4 gap-8 items-start">
             <div className="flex flex-col gap-4 md:col-span-1">

@@ -137,7 +137,9 @@ export default function AuthorPublicationsPage() {
                       Track
                     </Link>
                     <a 
-                      href="#" 
+                      href={s.doi ? `https://doi.org/${s.doi}` : '#'}
+                      target={s.doi ? '_blank' : undefined}
+                      rel="noopener noreferrer"
                       className="rounded-full bg-ochre px-4 py-2 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90 transition-colors inline-flex items-center gap-1 shadow-sm"
                     >
                       View <ExternalLink className="h-3.5 w-3.5" />

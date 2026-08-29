@@ -126,9 +126,9 @@ export default function BlogDetailPage({ params }: { params: { id: string } }) {
             {post.title}
           </h1>
           <div className="flex items-center gap-4 text-sm text-forest-green/50">
-            <Link href="/authors/dr-priya-raghunathan" className="flex items-center gap-1.5 font-bold text-ochre hover:underline">
+            <span className="flex items-center gap-1.5 font-bold text-ochre">
               <User className="h-3.5 w-3.5" />{post.author}
-            </Link>
+            </span>
             <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" />{post.date}</span>
           </div>
         </div>

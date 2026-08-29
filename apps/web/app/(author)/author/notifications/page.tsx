@@ -1,11 +1,13 @@
 'use client';
 
+// TODO: Replace demo data with GET /api/v1/notifications once backend credentials are available.
+
 import Link from 'next/link';
 import { PageHeader } from '@/components/common/PageHeader';
 import { EmptyState } from '@/components/common/EmptyState';
+import { DEMO_NOTIFICATIONS } from '@/lib/demo-data';
 import { Bell, CheckCheck } from 'lucide-react';
 import { useState } from 'react';
-import { DEMO_NOTIFICATIONS } from '@/lib/demo-data';
 
 const TYPE_STYLE: Record<string, string> = {
   success: 'bg-green-50 border-green-200',
@@ -13,6 +15,7 @@ const TYPE_STYLE: Record<string, string> = {
   info:    'bg-blue-50 border-blue-200',
   error:   'bg-red-50 border-red-200',
 };
+
 const DOT_COLOR: Record<string, string> = {
   success: 'bg-green-500',
   warning: 'bg-amber-500',
@@ -20,7 +23,7 @@ const DOT_COLOR: Record<string, string> = {
   error:   'bg-red-500',
 };
 
-export default function MemberNotificationsPage() {
+export default function AuthorNotificationsPage() {
   const [items, setItems] = useState(DEMO_NOTIFICATIONS);
   const unread = items.filter(n => !n.read).length;
 
@@ -32,8 +35,9 @@ export default function MemberNotificationsPage() {
       <PageHeader
         title="Notifications"
         subtitle={unread > 0 ? `${unread} Unread` : 'All caught up'}
-        role="member"
+        role="author"
       />
+
       <main className="flex-1 px-8 py-6 flex flex-col gap-4">
         {unread > 0 && (
           <div className="flex justify-end">
@@ -43,8 +47,12 @@ export default function MemberNotificationsPage() {
             </button>
           </div>
         )}
+
         {items.length === 0 ? (
-          <EmptyState icon={Bell} title="No notifications." />
+          <EmptyState
+            icon={Bell}
+            title="No notifications."
+          />
         ) : (
           <div className="flex flex-col gap-2">
             {items.map(n => (

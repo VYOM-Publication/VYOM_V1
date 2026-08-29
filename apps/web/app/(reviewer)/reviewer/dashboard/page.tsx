@@ -1,6 +1,6 @@
 'use client';
 
-import { useDemoAuth } from '@/lib/demo-auth';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import Link from 'next/link';
 import { 
   ClipboardList, Clock, CheckCircle, AlertCircle, ArrowRight, 
@@ -13,7 +13,7 @@ import { ReviewerResources } from '@/components/reviewer/ReviewerResources';
 import { SectionHeader } from '@/components/reader/SectionHeader';
 
 export default function ReviewerDashboardPage() {
-  const { session } = useDemoAuth();
+  const { user } = useAuthStore();
 
   const activeAssignments = DEMO_REVIEW_ASSIGNMENTS;
   const completedReviews = DEMO_COMPLETED_REVIEWS;
@@ -30,7 +30,7 @@ export default function ReviewerDashboardPage() {
     <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10">
       {/* 1. Welcome Hero */}
       <ReviewerHero 
-        name={session?.name ?? 'Dr. Ananya Sharma'} 
+        name={user?.fullName ?? 'Reviewer'} 
         activeCount={activeAssignments.length} 
       />
 

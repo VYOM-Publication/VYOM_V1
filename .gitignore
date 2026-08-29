@@ -2,6 +2,8 @@ node_modules/
 dist/
 .next/
 .turbo/
+# Kiro IDE settings
+.kiro/
 # Exclude all .env files regardless of naming convention:
 #   *.env  catches  production.env, staging.env, etc.
 #   **/.env catches  apps/api/.env, apps/web/.env, etc. (dotfiles named .env)

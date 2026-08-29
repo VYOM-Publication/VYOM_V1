@@ -42,21 +42,22 @@ function BooksCatalogContent() {
   const [query, setQuery]       = useState('');
   const [category, setCategory] = useState('All');
 
-  // Sync category search param to local state
+  // Sync category AND query search params to local state
   useEffect(() => {
     if (categoryParam) {
       const matched = CATEGORIES.find(
         (c) => c.toLowerCase() === categoryParam.toLowerCase()
       );
-      if (matched) {
-        setCategory(matched);
-      }
+      if (matched) setCategory(matched);
     }
-  }, [categoryParam]);
+    const queryParam = searchParams.get('query');
+    if (queryParam) setQuery(queryParam);
+  }, [categoryParam, searchParams]);
 
   const filtered = useMemo(() => {
     return ALL_BOOKS.filter((b) => {
       const matchCat   = category === 'All' || b.category === category;
+      // Accept both ?query= (from SearchBar) and ?category= params
       const matchQuery = query.trim() === '' ||
         b.title.toLowerCase().includes(query.toLowerCase()) ||
         b.author.toLowerCase().includes(query.toLowerCase());
@@ -79,7 +80,10 @@ function BooksCatalogContent() {
           </h1>
 
           {/* Search bar */}
-          <div className="flex w-full max-w-xl gap-0 rounded-full border border-sand/50 bg-white overflow-hidden shadow-sm">
+          <form
+            onSubmit={e => { e.preventDefault(); }}
+            className="flex w-full max-w-xl gap-0 rounded-full border border-sand/50 bg-white overflow-hidden shadow-sm"
+          >
             <div className="flex items-center pl-5 pr-2">
               <Search className="h-4 w-4 text-forest-green/40 shrink-0" />
             </div>
@@ -92,11 +96,12 @@ function BooksCatalogContent() {
               className="flex-1 py-3 pr-2 text-sm text-forest-green placeholder:text-forest-green/35 bg-transparent focus:outline-none"
             />
             <button
+              type="submit"
               aria-label="Search"
               className="m-1.5 rounded-full bg-ochre px-6 py-2 text-sm font-semibold text-ivory hover:bg-ochre/90 transition-colors flex items-center gap-2 shrink-0">
               Search <ArrowRight className="h-4 w-4" />
             </button>
-          </div>
+          </form>
 
           {/* Category filter pills */}
           <div className="flex flex-wrap gap-2 justify-center" role="group" aria-label="Filter by category">

@@ -23,7 +23,7 @@ export async function connectDatabase(): Promise<void> {
   try {
     await mongoose.connect(config.db.mongoUri, {
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 15000,
       socketTimeoutMS: 45000,
     });
   } catch (err) {

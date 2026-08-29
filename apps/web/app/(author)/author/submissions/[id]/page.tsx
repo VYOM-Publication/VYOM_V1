@@ -133,9 +133,12 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
                   <span className="text-[9px] font-bold text-amber-600 uppercase tracking-widest">Submission Deadline</span>
                   <p className="text-xs font-bold text-amber-800 mt-0.5">{s.revisionDeadline || '12 August 2025'}</p>
                 </div>
-                <button className="w-full sm:w-auto rounded-full bg-amber-600 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white hover:bg-amber-700 transition-colors shrink-0">
+                <Link
+                  href="/author/submissions/new"
+                  className="w-full sm:w-auto rounded-full bg-amber-600 px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-white hover:bg-amber-700 transition-colors shrink-0 text-center"
+                >
                   Upload Revision
-                </button>
+                </Link>
               </div>
             </div>
           )}
@@ -222,10 +225,12 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
                 <h4 className="font-bold text-forest-green text-sm">Upload Revised Draft</h4>
                 <p className="text-xs text-forest-green/45 mt-1">PDF document formatting formats only. Max file limit 20MB.</p>
               </div>
-              <button className="rounded-full bg-forest-green px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-forest-green/90 transition-colors shadow-sm mt-2">
+              <button
+                onClick={() => alert('File upload will be available once storage is connected. Use the New Submission form for now.')}
+                className="rounded-full bg-forest-green px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-forest-green/90 transition-colors shadow-sm mt-2">
                 Choose Document File
               </button>
-              <p className="text-[10px] text-forest-green/30 italic">Demo view — uploading drafts is locked</p>
+              <p className="text-[10px] text-forest-green/30 italic">Manuscript file upload — storage integration pending</p>
             </section>
           )}
         </div>
@@ -278,7 +283,11 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
                     <p className="text-xs font-bold text-forest-green truncate">{file.name}</p>
                     <p className="text-[9px] text-forest-green/40 mt-0.5">{file.size} · Uploaded {file.date}</p>
                   </div>
-                  <button className="h-8 w-8 rounded-full hover:bg-sand/35 text-forest-green/60 hover:text-forest-green flex items-center justify-center shrink-0">
+                  <button
+                    onClick={() => alert(`"${file.name}" — file download will be available once storage is connected.`)}
+                    className="h-8 w-8 rounded-full hover:bg-sand/35 text-forest-green/60 hover:text-forest-green flex items-center justify-center shrink-0"
+                    title={`Download ${file.name}`}
+                  >
                     <Download className="h-3.5 w-3.5" />
                   </button>
                 </div>

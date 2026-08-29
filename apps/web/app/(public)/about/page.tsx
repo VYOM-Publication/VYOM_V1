@@ -28,7 +28,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── 2. ABOUT VYOM PUBLICATION ─────────────────────────────────────── */}
-      <section className="bg-ivory py-20 px-6">
+      <section className="bg-sand/10 py-20 px-6">
         <div className="mx-auto max-w-3xl text-center flex flex-col gap-6">
           <span className="text-xs font-bold uppercase tracking-widest text-ochre">
             About VYOM Publication
@@ -96,7 +96,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── 4. LEADERSHIP & EDITORIAL BOARD ──────────────────────────────── */}
-      <section className="bg-ivory py-20 px-6">
+      <section className="bg-sand/10 py-20 px-6">
         <div className="mx-auto max-w-5xl">
           <div className="text-center mb-14">
             <h2 className="font-display text-4xl md:text-5xl font-bold text-forest-green">

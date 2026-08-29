@@ -96,13 +96,13 @@ export default function AssignmentDetailPage({ params }: { params: { id: string 
             </p>
           </div>
 
-          {/* TODO: Replace href="#" with GET /api/v1/submissions/:id/file */}
-          <a
-            href="#"
+          {/* TODO: Wire to GET /api/v1/submissions/:id/file once file storage is connected */}
+          <button
+            onClick={() => alert('Manuscript file download will be available once file storage is connected.')}
             className="rounded-full bg-forest-green px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-forest-green/90 transition-colors inline-flex items-center gap-1.5 shrink-0 shadow-sm self-start"
           >
             <Download className="h-4 w-4" /> Download Manuscript PDF
-          </a>
+          </button>
         </div>
 
         {/* Workflow Stage */}
