@@ -125,7 +125,9 @@ export const config = {
       'COOKIE_SECRET',
       'dev-only-cookie-secret-32bytes-placeholder!!',
     ),
-    domain: optionalEnv('COOKIE_DOMAIN', 'localhost'),
+    // In development, omit the domain so the browser accepts the cookie for localhost.
+    // Browsers reject cookies with domain=localhost explicitly set.
+    domain: IS_PRODUCTION ? optionalEnv('COOKIE_DOMAIN', 'localhost') : undefined,
     secure: IS_PRODUCTION,
     sameSite: (IS_PRODUCTION ? 'strict' : 'lax') as 'strict' | 'lax',
   },

@@ -40,25 +40,19 @@ export default function EditorialBoardPage() {
       </section>
 
       {/* Journal boards */}
-      <section className="py-16 px-6">
+      <section className="py-16 px-6 bg-ivory">
         <div className="mx-auto max-w-5xl flex flex-col gap-14">
-          {DEMO_EDITORIAL_BOARDS.map(({ journal, issn, frequency, scope, members }) => (
+          {DEMO_EDITORIAL_BOARDS.map(({ journal, scope, editors, vicharEditors, members }) => (
             <div key={journal} className="flex flex-col gap-6">
-              {/* Journal header */}
-              <div className="rounded-2xl border border-sand/40 bg-white px-7 py-5 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                <div>
-                  <h2 className="font-display text-xl font-bold text-forest-green leading-snug">{journal}</h2>
-                  <p className="text-sm text-forest-green/60 mt-1 leading-relaxed max-w-lg">{scope}</p>
-                </div>
-                <div className="flex flex-col gap-1 text-xs text-right shrink-0">
-                  <span className="font-bold uppercase tracking-widest text-forest-green/40">ISSN</span>
-                  <span className="font-mono text-forest-green/70">{issn}</span>
-                  <span className="font-bold uppercase tracking-widest text-forest-green/40 mt-1">Frequency</span>
-                  <span className="text-forest-green/70">{frequency}</span>
-                </div>
+
+              {/* Journal header — title only */}
+              <div className="rounded-2xl border border-sand/40 bg-white px-7 py-5">
+                <h2 className="font-display text-xl font-bold text-forest-green leading-snug">{journal}</h2>
+                {scope && <p className="text-sm text-forest-green/60 mt-1 leading-relaxed">{scope}</p>}
               </div>
 
-              {/* Members grid */}
+              {/* VYOM's Editorial Board heading + members grid */}
+              <p className="text-xs font-bold uppercase tracking-widest text-ochre">VYOM's Editorial Board</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {members.map(({ name, role, institution, country }) => (
                   <div key={name}
@@ -74,6 +68,41 @@ export default function EditorialBoardPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Editors section */}
+              {editors && editors.length > 0 && (
+                <div className="flex flex-col gap-3">
+                  <p className="text-xs font-bold uppercase tracking-widest text-ochre">Editors</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {editors.map((name, i) => (
+                      <div key={name}
+                        className="rounded-2xl border border-sand/40 bg-ivory px-5 py-4 flex items-center gap-3 hover:border-sand hover:shadow-card transition-all">
+                        <span className="text-xs text-forest-green/40 font-bold shrink-0">{i + 1}.</span>
+                        <span className="font-display text-sm font-bold text-forest-green">{name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* VYOM Vichar Blogs Editors section */}
+              {vicharEditors && vicharEditors.length > 0 && (
+                <div className="flex flex-col gap-3">
+                  <p className="text-xs font-bold uppercase tracking-widest text-ochre">VYOM Vichar — Blogs Editors</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {vicharEditors.map(({ name, note }, i) => (
+                      <div key={name}
+                        className="rounded-2xl border border-sand/40 bg-ivory px-5 py-4 flex items-center gap-3 hover:border-sand hover:shadow-card transition-all">
+                        <span className="text-xs text-forest-green/40 font-bold shrink-0">{i + 1}.</span>
+                        <div className="flex flex-col">
+                          <span className="font-display text-sm font-bold text-forest-green">{name}</span>
+                          {note && <span className="text-xs text-forest-green/50 mt-0.5">{note}</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

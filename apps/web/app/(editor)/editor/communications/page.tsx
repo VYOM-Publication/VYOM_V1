@@ -15,11 +15,19 @@ const DEMO_MESSAGES = [
 ];
 
 export default function EditorCommunicationsPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const [selectedId, setSelectedId] = useState('1');
   const [replyText, setReplyText] = useState('');
   const [sentMsg, setSentMsg] = useState(false);
 
-  const activeMessage = DEMO_MESSAGES.find(m => m.id === selectedId) ?? DEMO_MESSAGES[0];
+  const filteredMessages = DEMO_MESSAGES.filter(m => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return m.sender.toLowerCase().includes(q) || m.manuscript.toLowerCase().includes(q) || m.subject.toLowerCase().includes(q);
+  });
+
+  const activeMessage = filteredMessages.find(m => m.id === selectedId) ?? filteredMessages[0] ?? DEMO_MESSAGES[0];
 
   const handleSendReply = () => {
     if (!replyText.trim()) return;
@@ -45,6 +53,8 @@ export default function EditorCommunicationsPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-forest-green/40" />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search messages..."
                 className="w-full rounded-xl border border-sand/40 bg-white pl-9 pr-3 py-2 text-xs text-forest-green focus:outline-none focus:border-ochre"
               />
@@ -52,7 +62,7 @@ export default function EditorCommunicationsPage() {
           </div>
 
           <div className="flex-1 overflow-y-auto divide-y divide-sand/20">
-            {DEMO_MESSAGES.map(m => {
+            {filteredMessages.map(m => {
               const isSelected = m.id === selectedId;
               return (
                 <button

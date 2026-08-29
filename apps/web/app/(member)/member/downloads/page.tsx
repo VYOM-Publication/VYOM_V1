@@ -28,9 +28,13 @@ export default function DownloadsPage() {
                 <p className="text-xs text-forest-green/30 mt-0.5">{d.fileType} · {d.fileSize} · Downloaded {d.downloadDate}</p>
               </div>
             </div>
-            <button className="flex items-center gap-1.5 rounded-full border border-sand/50 px-4 py-1.5 text-xs font-bold text-forest-green/60 hover:border-ochre hover:text-ochre transition-colors shrink-0">
+            <a
+              href="#"
+              onClick={e => { e.preventDefault(); alert(`Re-downloading "${d.title}" — file download will be available once storage is connected.`); }}
+              className="flex items-center gap-1.5 rounded-full border border-sand/50 px-4 py-1.5 text-xs font-bold text-forest-green/60 hover:border-ochre hover:text-ochre transition-colors shrink-0"
+            >
               <Download className="h-3.5 w-3.5" /> Re-download
-            </button>
+            </a>
           </div>
         ))}
       </main>

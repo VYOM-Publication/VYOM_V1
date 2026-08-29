@@ -1,6 +1,6 @@
 'use client';
 
-import { useDemoAuth } from '@/lib/demo-auth';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import Link from 'next/link';
 import { 
   FileText, Calendar, DollarSign, Clock, HelpCircle, 
@@ -14,7 +14,7 @@ import { AuthorResources } from '@/components/author/AuthorResources';
 import { SectionHeader } from '@/components/reader/SectionHeader';
 
 export default function AuthorDashboardPage() {
-  const { session } = useDemoAuth();
+  const { user } = useAuthStore();
 
   // Find latest active submission in pipeline
   const activeSubmissions = DEMO_SUBMISSIONS.filter(s => s.status !== 'PUBLISHED');
@@ -47,7 +47,7 @@ export default function AuthorDashboardPage() {
     <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10">
       {/* 1. Welcome Hero */}
       <AuthorHero 
-        name={session?.name ?? 'Author'} 
+        name={user?.fullName ?? 'Author'} 
         latestSubmissionId={latestSub?.id} 
       />
 

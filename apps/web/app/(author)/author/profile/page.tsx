@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import { DEMO_AUTHOR_PROFILE, DEMO_SUBMISSIONS } from '@/lib/demo-data';
 import { 
   CheckCircle, User, Award, BookOpen, GraduationCap, 
@@ -10,7 +11,12 @@ import {
 import { StatusBadge } from '@/components/common/StatusBadge';
 
 export default function AuthorProfilePage() {
-  const [form, setForm] = useState(DEMO_AUTHOR_PROFILE);
+  const { user } = useAuthStore();
+  const [form, setForm] = useState({
+    ...DEMO_AUTHOR_PROFILE,
+    fullName: user?.fullName ?? DEMO_AUTHOR_PROFILE.fullName,
+    email: user?.email ?? DEMO_AUTHOR_PROFILE.email,
+  });
   const [saved, setSaved] = useState(false);
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
@@ -68,7 +74,7 @@ export default function AuthorProfilePage() {
               </div>
               <div className="flex items-center gap-2.5 text-forest-green/70">
                 <Phone className="h-3.5 w-3.5 text-forest-green/30" />
-                <span>{form.phone || '+91 98765 43210'}</span>
+                <span>{form.phone || 'Not provided'}</span>
               </div>
               {form.orcidId && (
                 <div className="flex items-center gap-2.5 text-forest-green/70">

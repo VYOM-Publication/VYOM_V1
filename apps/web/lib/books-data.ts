@@ -12,11 +12,14 @@ export const CATALOGUE = [
     category: 'Academic & Research',
     year: 2024,
     price: 499,
+    free: false,
     pages: 312,
     isbn: '978-81-VYOM-01-1',
     language: 'English',
     description:
       'A comprehensive guide to research methodology, academic writing, and scholarly inquiry for graduate students and early-career researchers. This book bridges the gap between theoretical frameworks and practical research execution.',
+    previewText:
+      'Research is the cornerstone of all scholarly achievement. This opening chapter introduces the fundamental principles that underpin rigorous academic inquiry — from formulating a research question to selecting an appropriate methodology. We begin with the premise that good research is not merely a collection of facts, but a structured argument supported by evidence. The researcher\'s primary obligation is to the truth of their findings, not to any predetermined conclusion. Chapter 1 establishes the distinction between primary and secondary research, qualitative and quantitative approaches, and the emerging field of mixed-methods design. Each subsequent chapter builds on these foundations, guiding the reader through literature review construction, data collection, analysis, and the final presentation of scholarly work...',
     highlights: [
       'Covers quantitative, qualitative, and mixed-methods approaches',
       'Includes real-world case studies from Indian academic institutions',
@@ -34,11 +37,14 @@ export const CATALOGUE = [
     category: 'Science & Technology',
     year: 2024,
     price: 599,
+    free: false,
     pages: 428,
     isbn: '978-81-VYOM-02-8',
     language: 'English',
     description:
       'An authoritative survey of cutting-edge developments across applied sciences — from materials engineering to biomedical technology.',
+    previewText:
+      'The applied sciences occupy a unique position at the intersection of theoretical knowledge and practical innovation. This volume begins by mapping the terrain of contemporary applied science — from nano-materials and smart manufacturing to computational biology and medical devices. The first section surveys the state of materials engineering, examining how advances in graphene synthesis, polymer science, and composite materials are reshaping industrial production. Section two pivots to biomedical applications, tracing the trajectory from laboratory discovery to clinical deployment. Throughout, the authors maintain a consistent focus on the social and ethical dimensions of technological change, asking not only what is possible but what is desirable...',
     highlights: [
       'Covers 12 applied science disciplines in depth',
       'Peer-reviewed contributions from 18 domain experts',
@@ -56,11 +62,14 @@ export const CATALOGUE = [
     category: 'Literature',
     year: 2024,
     price: 449,
+    free: false,
     pages: 256,
     isbn: '978-81-VYOM-03-5',
     language: 'English',
     description:
       'A critical exploration of contemporary literary movements, postmodern narratives, and the evolving landscape of world literature.',
+    previewText:
+      'What does it mean to read a text "critically"? This question, deceptively simple, lies at the heart of contemporary literary studies. In this opening chapter, we trace the shift from New Criticism\'s close reading practices to the more contextual, politically engaged methodologies that dominate contemporary scholarship. The emergence of postcolonial theory, feminist literary criticism, and ecocriticism has fundamentally expanded the questions that literary scholars ask of a text. We are no longer content to ask only what a novel means in isolation; we ask who wrote it, under what conditions, for whom, and with what political and cultural consequences. The chapters that follow apply these frameworks to a selection of contemporary works...',
     highlights: [
       'Analyses works from South Asian, African, and Latin American traditions',
       'Engages with postcolonial, feminist, and ecocritical frameworks',
@@ -78,11 +87,14 @@ export const CATALOGUE = [
     category: 'Non-Fiction',
     year: 2024,
     price: 399,
+    free: false,
     pages: 290,
     isbn: '978-81-VYOM-04-2',
     language: 'English',
     description:
       "A timely analysis of India's macroeconomic landscape, fiscal policy, and global trade dynamics in 2024.",
+    previewText:
+      "India entered 2024 at a macroeconomic crossroads. Real GDP growth held at 6.8 percent, making it the fastest-growing major economy for the third consecutive year. Yet beneath this headline figure, significant structural tensions persisted. Inflation, while moderated from its 2022 peaks, remained elevated in food and energy categories, placing pressure on household consumption. The Reserve Bank of India maintained a cautious monetary stance, holding the repo rate steady through the first quarter while signalling readiness to act should inflationary pressures re-emerge. This opening chapter contextualises India's 2024 economic position within the broader global landscape, examining how the twin shocks of geopolitical fragmentation and green transition are reshaping trade flows and investment patterns...",
     highlights: [
       'Data-driven analysis of GDP, inflation, and employment trends',
       'Covers Union Budget 2024 implications in detail',
@@ -100,11 +112,14 @@ export const CATALOGUE = [
     category: 'Science & Technology',
     year: 2024,
     price: 699,
+    free: false,
     pages: 380,
     isbn: '978-81-VYOM-05-9',
     language: 'English',
     description:
       'An accessible yet technically rigorous introduction to quantum computing — covering qubits, quantum gates, entanglement, and near-term quantum algorithms.',
+    previewText:
+      'Classical computers, from the earliest vacuum tube machines to today\'s silicon processors, operate on a single fundamental principle: information is encoded as bits, each taking a value of 0 or 1. Quantum computers break with this principle entirely. A quantum bit — a qubit — can exist in a superposition of 0 and 1 simultaneously, a property that, when harnessed through carefully designed quantum circuits, enables computations that would take classical machines millions of years to complete. This introductory chapter establishes the physical and mathematical foundations of quantum computing. We begin with a brief survey of quantum mechanics — not to provide a complete treatment, but to establish the conceptual vocabulary necessary for understanding quantum gates, entanglement, and quantum parallelism...',
     highlights: [
       'Covers quantum circuit design and simulation',
       'Includes Python code examples using Qiskit',
@@ -121,12 +136,15 @@ export const CATALOGUE = [
     author: 'Prof. Leela Krishnan',
     category: 'Literature',
     year: 2023,
-    price: 349,
+    price: 0,
+    free: true,
     pages: 224,
     isbn: '978-81-VYOM-06-6',
     language: 'English',
     description:
       'A scholarly examination of post-colonial literature across South and Southeast Asia.',
+    previewText:
+      'The literature that emerged from the ruins of empire is among the most vital and politically urgent writing of the twentieth century. In India, the partition novel — Bhisham Sahni\'s Tamas, Saadat Hasan Manto\'s short stories, Amrita Pritam\'s Pinjar — bears witness to the violence that accompanied independence. In Sri Lanka, the Sinhala-Tamil conflict produced a body of writing that has only recently received the international critical attention it deserves. In Malaysia and Singapore, the English-language novel grapples with the legacies of British colonialism and the formation of postcolonial national identities. This opening chapter maps the terrain of post-colonial literary studies, situating the texts examined in subsequent chapters within their historical and political contexts. Drawing on the theoretical frameworks of Homi Bhabha, Gayatri Spivak, and Frantz Fanon, we ask what it means to write — and to read — from the margins of the former empire...',
     highlights: [
       'Covers writers from India, Sri Lanka, Malaysia, and Singapore',
       "Engages with Fanon, Spivak, and Bhabha's theoretical frameworks",
@@ -143,12 +161,15 @@ export const CATALOGUE = [
     author: 'Dr. Arun Nambiar',
     category: 'Academic & Research',
     year: 2023,
-    price: 549,
+    price: 0,
+    free: true,
     pages: 344,
     isbn: '978-81-VYOM-07-3',
     language: 'English',
     description:
       "A comprehensive academic analysis of the UN's 17 Sustainable Development Goals with a focus on South Asia.",
+    previewText:
+      'When world leaders adopted the 2030 Agenda for Sustainable Development in September 2015, they committed their nations to 17 goals and 169 targets spanning poverty eradication, climate action, gender equality, and peaceful societies. A decade on from that commitment, the evidence of progress is mixed. In South Asia — home to nearly two billion people and some of the world\'s most acute development challenges — the SDGs have catalysed significant policy innovation while also revealing the limits of globally defined targets applied to locally specific contexts. This book examines the SDG framework through the lens of South Asian experience. Chapter 1 introduces the architecture of the 2030 Agenda, tracing its lineage from the Millennium Development Goals and mapping the political negotiations that shaped the final framework. Subsequent chapters take each goal in turn, examining data, policy, and progress across India, Bangladesh, Nepal, and Sri Lanka...',
     highlights: [
       'Covers all 17 SDGs with country-level case studies',
       'Includes original field research from 6 Indian states',
@@ -166,11 +187,14 @@ export const CATALOGUE = [
     category: 'Fiction',
     year: 2023,
     price: 299,
+    free: false,
     pages: 198,
     isbn: '978-81-VYOM-08-0',
     language: 'English',
     description:
       "A beautifully crafted collection of interconnected short stories exploring the lives of ordinary people in contemporary India.",
+    previewText:
+      'The morning Radha\'s husband left for the Gulf, she stood at the kitchen window watching the auto-rickshaw until it disappeared around the bend in the road. She had imagined this moment many times over the preceding weeks — rehearsed, in her mind, how she would feel. Relieved, she had thought. Free. Instead she felt only the familiar weight of the house pressing down around her: the smell of yesterday\'s cooking still in the curtains, the tap that dripped despite three visits from the plumber, the sound of her mother-in-law\'s television from the room at the end of the corridor. Her youngest daughter appeared at her elbow and pressed her face into her sari. "When is Baba coming back?" "Six months," Radha said. She lifted her daughter and held her close. Outside, a crow settled on the compound wall and fixed her with one bright, unreadable eye...',
     highlights: [
       '12 interconnected short stories set across India',
       'Longlisted for the JCB Prize for Literature',
@@ -188,11 +212,14 @@ export const CATALOGUE = [
     category: 'Science & Technology',
     year: 2023,
     price: 649,
+    free: false,
     pages: 410,
     isbn: '978-81-VYOM-09-7',
     language: 'English',
     description:
       'A definitive textbook covering the core principles of molecular biology — from DNA replication to CRISPR technology.',
+    previewText:
+      'Life, at its most fundamental level, is information. The instructions for building and operating a living cell are encoded in deoxyribonucleic acid — DNA — a molecule of extraordinary elegance and complexity. This textbook begins with the structure of DNA: the double helix, first described by Watson and Crick in 1953, remains one of the most significant scientific discoveries of the twentieth century. We examine how the complementary base-pairing of adenine with thymine and guanine with cytosine provides both the mechanism for faithful replication and the template for transcription. Chapter 2 turns to the central dogma of molecular biology: the flow of information from DNA to RNA to protein. This framework, first articulated by Francis Crick, organises the discipline and provides the conceptual scaffolding for everything that follows...',
     highlights: [
       'Covers classical and modern molecular biology',
       'Includes 200+ diagrams and illustrations',
@@ -210,11 +237,14 @@ export const CATALOGUE = [
     category: 'Non-Fiction',
     year: 2022,
     price: 449,
+    free: false,
     pages: 318,
     isbn: '978-81-VYOM-10-3',
     language: 'English',
     description:
       "A sweeping narrative of India's economic journey from liberalisation in 1991 to the digital economy of the 2020s.",
+    previewText:
+      "On 24 July 1991, Finance Minister Manmohan Singh rose in the Lok Sabha to present a Union Budget that would alter the course of Indian economic history. \"No power on earth can stop an idea whose time has come,\" he told Parliament, quoting Victor Hugo. The idea was economic liberalisation: the dismantling of the License Raj, the opening of Indian markets to foreign investment, and the beginning of a transformation that would lift hundreds of millions out of poverty over the following three decades. This book traces that transformation — from the crisis-driven reforms of 1991 through the IT revolution of the late 1990s, the infrastructure decade of the 2000s, the mobile internet boom of the 2010s, and the emergence of India as a significant global economic power in the 2020s. It is a story of extraordinary achievement and persistent inequality, of visionary policy and political compromise...",
     highlights: [
       'Covers 30 years of economic policy',
       'Interviews with former Finance Ministry officials',
@@ -231,12 +261,15 @@ export const CATALOGUE = [
     author: 'Dr. Kavita Rao',
     category: 'Fiction',
     year: 2022,
-    price: 349,
+    price: 0,
+    free: true,
     pages: 242,
     isbn: '978-81-VYOM-11-0',
     language: 'English',
     description:
       'A powerful novel exploring caste, gender, and identity in rural India through the eyes of three women across three generations.',
+    previewText:
+      'Savitribai was born in the year the country became a republic, in a village so small it did not appear on any map she had ever seen. Her mother delivered her on the earthen floor of their single-room home, attended only by the old midwife who had delivered half the village. When the midwife placed the child in her arms, Savitribai\'s mother did not weep, as she had wept when her first daughter was born. She had learned, by then, that weeping was a luxury she could not afford. The child was dark and strong and screamed immediately, which the midwife said was a good sign. "She will speak her mind," the old woman said, wiping her hands. "God help you." Savitribai\'s mother looked at her daughter\'s face and saw, as she always claimed she did in later years, the entire future compressed into that one small furious expression...',
     highlights: [
       'Winner of the Sahitya Akademi Yuva Puraskar',
       'Translated into 5 languages',
@@ -254,11 +287,14 @@ export const CATALOGUE = [
     category: 'Academic & Research',
     year: 2022,
     price: 499,
+    free: false,
     pages: 296,
     isbn: '978-81-VYOM-12-7',
     language: 'English',
     description:
       'A rigorous comparative study of environmental legislation, climate policy, and conservation efforts across India, Bangladesh, Nepal, and Sri Lanka.',
+    previewText:
+      'The Hindu Kush Himalayan system — the water tower of Asia — feeds the rivers on which one third of humanity depends. The Ganga, the Brahmaputra, the Indus, the Mekong: all originate in glaciers and snowfields that are retreating at rates not seen in recorded history. Downstream, the countries of South Asia face converging environmental crises: extreme heat events that render agricultural land unproductive, monsoon variability that simultaneously threatens drought and catastrophic flooding, and coastal inundation that is already displacing communities in Bangladesh and along India\'s eastern coast. This book examines how the nations of South Asia are responding to these challenges through environmental legislation and climate policy. Chapter 1 maps the regulatory landscape, comparing constitutional provisions, national environmental laws, and international treaty obligations across India, Bangladesh, Nepal, and Sri Lanka...',
     highlights: [
       'Comparative policy analysis across 4 nations',
       'Includes original environmental impact data',
@@ -276,11 +312,14 @@ export const CATALOGUE = [
     category: 'Academic & Research',
     year: 2024,
     price: 399,
+    free: false,
     pages: 268,
     isbn: '978-81-VYOM-13-4',
     language: 'English',
     description:
       'An accessible introduction to the emerging field of digital humanities — exploring how computational methods are transforming literary analysis and cultural studies.',
+    previewText:
+      'What happens when you feed the complete works of Shakespeare into a computer? The question sounds flippant, but it lies at the heart of digital humanities — a field that has spent the past three decades developing rigorous methods for applying computational tools to humanistic questions. The answer, it turns out, is that you discover things about Shakespeare that no individual reader, however attentive, could ever notice: patterns of word frequency, syntactic variation, and thematic recurrence that only become visible when you can process the entire corpus simultaneously. This is not to say that the computer reads Shakespeare better than a trained literary critic. It is to say that it reads differently — and that this different kind of reading opens up new questions and new possibilities. Chapter 1 introduces the history of digital humanities, tracing its origins in the work of Father Roberto Busa...',
     highlights: [
       'Covers text mining, network analysis, and GIS',
       'No prior programming knowledge required',
@@ -297,12 +336,15 @@ export const CATALOGUE = [
     author: 'Sunita Verma',
     category: 'Fiction',
     year: 2023,
-    price: 279,
+    price: 0,
+    free: true,
     pages: 214,
     isbn: '978-81-VYOM-14-1',
     language: 'English',
     description:
       "A lyrical debut novel set along the banks of the Ganga, following a young woman's journey of self-discovery against the backdrop of a changing India.",
+    previewText:
+      'The river knew her before she knew herself. As a child, Kavya had stood at the ghat each morning with her grandmother, watching the offerings set adrift on the current — the marigold garlands, the clay lamps, the scraps of prayer written on paper that dissolved almost immediately into the brown water. She had understood, even then, that the river was not merely water. It was memory. It was all the prayers and the dead and the wishes of everyone who had ever stood on these steps and looked out at the current and felt the particular mixture of smallness and hope that the river seemed to summon. Now she was twenty-three, and she had come back to Varanasi after four years in Delhi, and the ghat looked smaller than she remembered, and the river was lower than it had ever been, and her grandmother was dead. She set her bag down on the steps and looked at the water and waited to feel something...',
     highlights: [
       'Debut novel — critically acclaimed',
       'Shortlisted for the Hindu Literary Prize',
@@ -320,11 +362,14 @@ export const CATALOGUE = [
     category: 'Science & Technology',
     year: 2024,
     price: 599,
+    free: false,
     pages: 356,
     isbn: '978-81-VYOM-15-8',
     language: 'English',
     description:
       'A state-of-the-art survey of computational linguistics — covering NLP pipelines, transformer models, and the linguistic theory underpinning modern language AI.',
+    previewText:
+      'Language is the most complex behaviour that humans routinely perform. Every sentence we produce requires the simultaneous coordination of phonological, syntactic, semantic, and pragmatic knowledge — a feat of real-time computation that no artificial system has yet matched in its full generality. Yet the past decade has seen remarkable progress. Large language models, trained on hundreds of billions of words, can now produce grammatically fluent, semantically coherent text across virtually any domain. They can translate between languages, summarise documents, answer questions, and engage in extended dialogue. This progress raises both scientific and philosophical questions that lie at the heart of computational linguistics. What do these models actually learn? Do they acquire anything analogous to the grammatical knowledge that linguists have spent decades trying to characterise? Chapter 1 surveys the history of the field...',
     highlights: [
       'Covers BERT, GPT, and multilingual models',
       'Includes Python NLP code examples',
@@ -341,12 +386,15 @@ export const CATALOGUE = [
     author: 'Dr. Arun Menon',
     category: 'Non-Fiction',
     year: 2022,
-    price: 429,
+    price: 0,
+    free: true,
     pages: 302,
     isbn: '978-81-VYOM-16-5',
     language: 'English',
     description:
       'A rigorous yet accessible exploration of the philosophy of mind — consciousness, qualia, personal identity, and the mind-body problem.',
+    previewText:
+      'What is it like to be you? The question seems trivial until you try to answer it seriously. There is something it is like to see the colour red — a specific subjective quality, a "redness" that is more than the wavelength of light or the firing of neurons. There is something it is like to feel pain, to hear music, to experience the particular quality of a summer afternoon. These subjective qualities — what philosophers call qualia — are the central puzzle of the philosophy of mind. We know, with reasonable confidence, how the brain processes visual information: the optic nerve transmits signals from the retina to the lateral geniculate nucleus, which relays them to the primary visual cortex, where edge detection, colour processing, and motion perception are handled by specialised neural circuits. What we do not know — and what may be the hardest problem in all of science and philosophy — is how this physical process gives rise to the subjective experience of seeing...',
     highlights: [
       "Engages with Chalmers, Nagel, and Advaita Vedanta",
       'Accessible to readers without a philosophy background',
@@ -360,7 +408,7 @@ export const CATALOGUE = [
 ];
 
 /** Lightweight version for listing pages */
-export const ALL_BOOKS = CATALOGUE.map(({ id, title, author, category }) => ({
-  id, title, author,
+export const ALL_BOOKS = CATALOGUE.map(({ id, title, author, category, free }) => ({
+  id, title, author, free,
   category: category.toUpperCase().replace(' & ', ' & ').replace('ACADEMIC & RESEARCH', 'ACADEMIC'),
 }));

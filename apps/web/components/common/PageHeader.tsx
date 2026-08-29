@@ -1,12 +1,11 @@
 import { DemoSessionBar } from '@/components/common/DemoSessionBar';
-import { type DemoRole } from '@/lib/demo-auth';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 interface Props {
   title: string;
   subtitle?: string;
-  role: DemoRole;
+  role: string;
   backLink?: string;
   children?: React.ReactNode;
 }
@@ -34,4 +33,3 @@ export function PageHeader({ title, subtitle, role, backLink, children }: Props)
     </header>
   );
 }
-

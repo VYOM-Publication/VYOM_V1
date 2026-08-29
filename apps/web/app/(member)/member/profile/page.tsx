@@ -1,17 +1,15 @@
 'use client';
 
-// TODO: Replace demo data with GET /api/v1/profile and PATCH /api/v1/profile once backend credentials are available.
-
 import { useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
-import { useDemoAuth } from '@/lib/demo-auth';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import { CheckCircle, User } from 'lucide-react';
 
 export default function MemberProfilePage() {
-  const { session } = useDemoAuth();
+  const { user } = useAuthStore();
   const [form, setForm] = useState({
-    fullName: session?.name ?? 'Demo Reader',
-    email: session?.email ?? 'reader@demo.com',
+    fullName: user?.fullName ?? '',
+    email: user?.email ?? '',
     phone: '',
     country: 'India',
     bio: '',

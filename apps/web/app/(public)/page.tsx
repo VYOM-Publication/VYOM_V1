@@ -157,7 +157,7 @@ export default function HomePage() {
 
       {/* ── 3. ABOUT VYOM ───────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="flex flex-col gap-5 max-w-2xl">
+        <div className="flex flex-col items-center text-center gap-5 max-w-2xl mx-auto">
           <div className="flex items-center gap-3">
             <span className="block h-px w-8 bg-ochre" />
             <span className="text-xs font-bold uppercase tracking-widest text-ochre">
@@ -174,7 +174,7 @@ export default function HomePage() {
             and disciplines.
           </p>
           <Link href="/about"
-            className="self-start inline-flex items-center gap-2 rounded-full border border-forest-green/50 px-7 py-3 text-sm font-semibold text-forest-green hover:bg-forest-green hover:text-ivory transition-colors">
+            className="inline-flex items-center gap-2 rounded-full border border-forest-green/50 px-7 py-3 text-sm font-semibold text-forest-green hover:bg-forest-green hover:text-ivory transition-colors">
             Learn More About Us <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -342,63 +342,32 @@ export default function HomePage() {
       </section>
 
       {/* ── 8. UPCOMING BOOK RELEASES ───────────────────────────────────── */}
-      <section className="py-24 px-6 bg-ivory">
+      <section className="pt-24 pb-0 px-6 bg-ivory overflow-hidden">
         <div className="mx-auto max-w-5xl">
+          {/* Heading — left aligned to match reference */}
           <h2 className="font-display text-4xl md:text-5xl font-bold text-forest-green mb-3">
             Upcoming Book Releases
           </h2>
-          <p className="text-forest-green/60 mb-14 max-w-xl text-base">
+          <p className="text-forest-green/60 mb-12 max-w-xl text-base">
             Stay updated with upcoming publications, special editions, and featured releases.
           </p>
 
-          {/* Fan of books */}
-          <div className="flex items-end justify-center">
-            <div className="relative h-56 w-[480px] select-none" aria-hidden="true">
-              {/* arch container */}
-              <div className="absolute inset-x-0 top-0 h-full border border-sand/30 rounded-t-full overflow-hidden" />
-              {/* fanned books */}
-              {[-40,-26,-13,0,13,26,40].map((deg, i) => (
-                <div key={i}
-                  className="absolute bottom-0 left-1/2 origin-bottom transition-all duration-300"
-                  style={{
-                    transform: `translateX(-50%) rotate(${deg}deg)`,
-                    zIndex: i < 3 ? i + 1 : 7 - i,
-                  }}>
-                  {/* The actual book card */}
-                  <div className="w-20 h-36 rounded-r-md shadow-lg border-t border-r border-b border-white/10 relative overflow-hidden transition-all duration-300 hover:-translate-y-6 hover:scale-115 cursor-pointer flex flex-col justify-between py-3 px-2"
-                    style={{
-                      background: `linear-gradient(135deg, ${[
-                        '#7B3F3F', '#B58A54', '#1A4D3E', '#8C6239',
-                        '#2A4E5C', '#8C527A', '#5C6C50'
-                      ][i]} 0%, ${[
-                        '#5C2E2E', '#9C7A4A', '#13382C', '#6F4E2C',
-                        '#1F3A45', '#6F3E5F', '#4A5640'
-                      ][i]} 100%)`,
-                    }}>
-                    {/* Spine highlight line */}
-                    <div className="absolute top-0 left-0 w-[4px] h-full bg-black/20" />
-                    
-                    {/* Tiny book layout details */}
-                    <div className="flex flex-col gap-1 items-center">
-                      <div className="w-6 h-[2px] bg-white/30 rounded-full" />
-                      <div className="w-4 h-[1.5px] bg-white/20 rounded-full" />
-                    </div>
-                    
-                    {/* Center gold star logo */}
-                    <div className="self-center flex items-center justify-center">
-                      <div className="w-3 h-3 rotate-45 border border-[#faf6f0]/40 flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 bg-[#faf6f0]/60 rounded-full" />
-                      </div>
-                    </div>
-                    
-                    {/* Bottom foil strip */}
-                    <div className="flex flex-col gap-0.5 items-center">
-                      <div className="w-10 h-[1.5px] bg-[#faf6f0]/30 rounded-full" />
-                      <span className="text-[6px] font-bold text-[#faf6f0]/50 tracking-wider font-mono">VYOM</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {/* Arch container with book photo */}
+          <div className="relative w-full max-w-3xl mx-auto">
+            {/* Arch border */}
+            <div className="absolute inset-x-0 top-0 bottom-0 border border-sand/30 rounded-t-[50%] pointer-events-none z-10" />
+            {/* Image container — natural aspect ratio, no stretch */}
+            <div className="relative w-full rounded-t-[50%] overflow-hidden flex items-end justify-center bg-ivory">
+              <Image
+                src="/books-fan.png"
+                alt="Fan of books arranged in a semicircle"
+                width={900}
+                height={500}
+                className="w-full h-auto object-contain mix-blend-multiply"
+                style={{ marginBottom: '-2px' }}
+              />
+              {/* Gradient fades bottom edge into page background */}
+              <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-ivory to-transparent pointer-events-none" />
             </div>
           </div>
         </div>

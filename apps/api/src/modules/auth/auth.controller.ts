@@ -9,10 +9,11 @@ const cookieOptions = {
   httpOnly: true,
   secure: config.cookie.secure,
   sameSite: config.cookie.sameSite,
-  domain: config.cookie.domain,
   path: '/',
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
-} as const;
+  // domain is omitted in development — browsers reject domain=localhost
+  ...(config.cookie.domain ? { domain: config.cookie.domain } : {}),
+};
 
 export class AuthController {
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {

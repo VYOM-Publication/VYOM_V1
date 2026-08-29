@@ -83,10 +83,20 @@ export default function EditorIssuesPage() {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                <button type="button" className="p-1.5 rounded-lg border border-sand/30 hover:bg-sand/30 text-forest-green/60">
+                <button
+                  type="button"
+                  onClick={() => {/* TODO: reorder when wired to API */}}
+                  disabled
+                  title="Reorder — available once wired to API"
+                  className="p-1.5 rounded-lg border border-sand/30 hover:bg-sand/30 text-forest-green/30 disabled:cursor-not-allowed">
                   <ArrowUp className="h-3.5 w-3.5" />
                 </button>
-                <button type="button" className="p-1.5 rounded-lg border border-sand/30 hover:bg-sand/30 text-forest-green/60">
+                <button
+                  type="button"
+                  onClick={() => {/* TODO: reorder when wired to API */}}
+                  disabled
+                  title="Reorder — available once wired to API"
+                  className="p-1.5 rounded-lg border border-sand/30 hover:bg-sand/30 text-forest-green/30 disabled:cursor-not-allowed">
                   <ArrowDown className="h-3.5 w-3.5" />
                 </button>
               </div>

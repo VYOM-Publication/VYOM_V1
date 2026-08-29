@@ -2,27 +2,15 @@ import { create } from 'zustand';
 import { User } from '@vyom/types';
 import { Role } from '@vyom/constants';
 
-// ── Demo Mode ────────────────────────────────────────────────────────────────
-// When NEXT_PUBLIC_DEMO_MODE=true the store is pre-seeded with a fake admin
-// user so all pages render correctly without a real backend.
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
-
-const DEMO_USER: User = {
-  id: 'demo-admin-001',
-  fullName: 'Demo Admin',
-  email: 'admin@vyom.com',
-  roles: [Role.ADMIN],
-  emailVerified: true,
-  status: 'active' as unknown as import('@vyom/types').UserStatus,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-} as unknown as User;
-
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  /**
+   * Starts true so layouts hold the render guard until initAuth() resolves.
+   * This prevents the redirect-to-login flash on page navigation when the
+   * user has a valid session but the in-memory store is cold (e.g. after a
+   * full-page refresh or navigating to a new route).
+   */
   isLoading: boolean;
   setUser: (user: User, accessToken: string) => void;
   clearAuth: () => void;
@@ -31,12 +19,11 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
-  user: DEMO_MODE ? DEMO_USER : null,
-  isAuthenticated: DEMO_MODE ? true : false,
-  isLoading: false,
+  user: null,
+  isAuthenticated: false,
+  isLoading: true, // ← true by default; initAuth() sets it false when done
 
   setUser: (user, accessToken) => {
-    // Store access token in memory — never in localStorage
     if (typeof window !== 'undefined') {
       window.__VYOM_ACCESS_TOKEN__ = accessToken;
     }

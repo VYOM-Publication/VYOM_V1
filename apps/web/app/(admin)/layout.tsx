@@ -4,34 +4,50 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Users, FileText, CreditCard, BarChart2, Megaphone, ScrollText, Settings, LogOut } from 'lucide-react';
-import { useDemoAuth } from '@/lib/demo-auth';
+import { useAuthStore } from '@/lib/stores/auth.store';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { useEffect } from 'react';
+import { Role } from '@vyom/constants';
 
 const NAV = [
-  { label: 'Dashboard',      href: '/admin/dashboard',       icon: LayoutDashboard },
-  { label: 'Users',          href: '/admin/users',           icon: Users },
-  { label: 'Submissions',    href: '/admin/submissions',     icon: FileText },
-  { label: 'Payments',       href: '/admin/payments',        icon: CreditCard },
-  { label: 'Reports',        href: '/admin/reports',         icon: BarChart2 },
-  { label: 'Announcements',  href: '/admin/announcements',   icon: Megaphone },
-  { label: 'Audit Logs',     href: '/admin/audit-logs',      icon: ScrollText },
-  { label: 'Settings',       href: '/admin/settings',        icon: Settings },
+  { label: 'Dashboard',     href: '/admin/dashboard',     icon: LayoutDashboard },
+  { label: 'Users',         href: '/admin/users',         icon: Users },
+  { label: 'Submissions',   href: '/admin/submissions',   icon: FileText },
+  { label: 'Payments',      href: '/admin/payments',      icon: CreditCard },
+  { label: 'Reports',       href: '/admin/reports',       icon: BarChart2 },
+  { label: 'Announcements', href: '/admin/announcements', icon: Megaphone },
+  { label: 'Audit Logs',    href: '/admin/audit-logs',    icon: ScrollText },
+  { label: 'Settings',      href: '/admin/settings',      icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router   = useRouter();
-  const { session, logout } = useDemoAuth();
+  const { user, isAuthenticated, isLoading } = useAuthStore();
+  const { initAuth, logout } = useAuth();
 
   useEffect(() => {
-    if (!session) {
-      router.replace('/login');
-    } else if (session.role !== 'admin') {
-      router.replace('/unauthorized');
-    }
-  }, [session, router]);
+    initAuth();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  function handleLogout() { logout(); router.push('/'); }
+  useEffect(() => {
+    if (isLoading) return;
+    if (!isAuthenticated) { router.replace('/login'); return; }
+    if (!user?.roles?.includes(Role.ADMIN)) router.replace('/unauthorized');
+  }, [isAuthenticated, isLoading, user, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-ivory flex items-center justify-center">
+        <div className="animate-pulse text-xs font-bold uppercase tracking-widest text-forest-green/50">
+          Loading Console…
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user?.roles?.includes(Role.ADMIN)) return null;
 
   return (
     <div className="flex min-h-screen bg-ivory font-body">
@@ -52,7 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             );
           })}
         </nav>
-        <button onClick={handleLogout}
+        <button onClick={() => logout()}
           className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-forest-green/50 hover:text-forest-green transition-colors">
           <LogOut className="h-4 w-4" /> Sign Out
         </button>

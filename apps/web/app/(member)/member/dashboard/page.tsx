@@ -1,6 +1,6 @@
 'use client';
 
-import { useDemoAuth } from '@/lib/demo-auth';
+import { useAuthStore } from '@/lib/stores/auth.store';
 import { BookOpen, Bookmark, Download, Clock } from 'lucide-react';
 import { DEMO_READING_HISTORY, DEMO_BOOKMARKS, DEMO_DOWNLOADS } from '@/lib/demo-data';
 import { SectionHeader } from '@/components/reader/SectionHeader';
@@ -13,7 +13,7 @@ import { ReadingProgressCard } from '@/components/reader/ReadingProgressCard';
 import { CompactStatCard } from '@/components/reader/CompactStatCard';
 
 export default function MemberDashboardPage() {
-  const { session } = useDemoAuth();
+  const { user } = useAuthStore();
 
   const inProgress = DEMO_READING_HISTORY.filter(r => r.progress < 100);
   const primaryBook = inProgress[0];
@@ -24,7 +24,7 @@ export default function MemberDashboardPage() {
   return (
     <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10">
       {/* 1. Welcome Header */}
-      <ReaderHero name={session?.name ?? 'Reader'} />
+      <ReaderHero name={user?.fullName ?? 'Reader'} />
 
       {/* 2. Primary Hero Continue Reading */}
       <ContinueReadingSection book={primaryBook} />

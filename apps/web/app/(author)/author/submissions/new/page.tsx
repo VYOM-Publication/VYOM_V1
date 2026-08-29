@@ -8,8 +8,9 @@
 // Error State: Display form error message alert or handle validation issues
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { PageHeader } from '@/components/common/PageHeader';
-import { CheckCircle, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronRight, UploadCloud, X } from 'lucide-react';
 import { DEMO_JOURNALS, DEMO_ARTICLE_TYPES } from '@/lib/demo-data';
 
 const STEPS = ['Abstract Details', 'Keywords & Metadata', 'Declaration', 'Submit'];
@@ -22,8 +23,61 @@ export default function NewSubmissionPage() {
     keywords: '', affiliation: '', coAuthors: '', fundingInfo: '',
     conflictOfInterest: false, ethicsApproval: false, originalWork: false,
   });
+  const [manuscriptFile, setManuscriptFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState('');
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverError, setCoverError] = useState('');
 
   const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }));
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    setFileError('');
+    if (!file) { setManuscriptFile(null); return; }
+    const allowed = [
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    if (!allowed.includes(file.type)) {
+      setFileError('Only .doc and .docx files are accepted.');
+      setManuscriptFile(null);
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      setFileError('File size must not exceed 20 MB.');
+      setManuscriptFile(null);
+      return;
+    }
+    setManuscriptFile(file);
+  }
+
+  function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    setCoverError('');
+    if (!file) { setCoverFile(null); setCoverPreview(null); return; }
+    const allowed = ['image/png', 'image/jpeg', 'image/jpg'];
+    if (!allowed.includes(file.type)) {
+      setCoverError('Only .png and .jpg / .jpeg images are accepted.');
+      setCoverFile(null); setCoverPreview(null);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setCoverError('Cover image must not exceed 5 MB.');
+      setCoverFile(null); setCoverPreview(null);
+      return;
+    }
+    setCoverFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => setCoverPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  function removeCover() {
+    setCoverFile(null);
+    setCoverPreview(null);
+    setCoverError('');
+  }
 
   if (submitted) {
     return (
@@ -42,9 +96,9 @@ export default function NewSubmissionPage() {
             <p className="text-xs text-forest-green/40 uppercase tracking-widest mb-1">Submission ID</p>
             <p className="font-display text-xl font-bold text-ochre">MS-2025-{String(Date.now()).slice(-3)}</p>
           </div>
-          <a href="/author/submissions" className="rounded-full bg-ochre px-7 py-3 text-sm font-bold text-ivory hover:bg-ochre/90">
+          <Link href="/author/submissions" className="rounded-full bg-ochre px-7 py-3 text-sm font-bold text-ivory hover:bg-ochre/90">
             View My Submissions
-          </a>
+          </Link>
         </main>
       </>
     );
@@ -101,12 +155,117 @@ export default function NewSubmissionPage() {
                 </select>
               </label>
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-bold uppercase tracking-widest text-forest-green/50">Abstract * (150–300 words)</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-forest-green/50">Abstract * (up to 1000 words)</span>
                 <textarea value={form.abstract} onChange={e => set('abstract', e.target.value)}
-                  rows={6} placeholder="Paste your abstract here..."
+                  rows={10} placeholder="Paste your abstract here..."
                   className="rounded-xl border border-sand/40 px-4 py-2.5 text-sm text-forest-green focus:outline-none focus:border-ochre resize-none" />
-                <span className="text-xs text-forest-green/30 text-right">{form.abstract.split(/\s+/).filter(Boolean).length} words</span>
+                <span className={`text-xs text-right font-medium transition-colors ${
+                  form.abstract.split(/\s+/).filter(Boolean).length > 1000
+                    ? 'text-red-500'
+                    : 'text-forest-green/30'
+                }`}>
+                  {form.abstract.split(/\s+/).filter(Boolean).length} / 1000 words
+                </span>
               </label>
+
+              {/* MS Word file upload */}
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs font-bold uppercase tracking-widest text-forest-green/50">
+                  Manuscript File (optional) — .doc / .docx, max 20 MB
+                </span>
+                {!manuscriptFile ? (
+                  <label className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-sand/60 bg-sand/10 px-6 py-8 cursor-pointer hover:border-ochre/50 hover:bg-ochre/5 transition-all">
+                    <UploadCloud className="h-8 w-8 text-forest-green/30" />
+                    <div className="text-center">
+                      <p className="text-sm font-semibold text-forest-green/60">Click to upload your manuscript</p>
+                      <p className="text-xs text-forest-green/30 mt-0.5">Accepted formats: .doc, .docx</p>
+                    </div>
+                    <input
+                      type="file"
+                      accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                ) : (
+                  <div className="flex items-center justify-between gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <UploadCloud className="h-5 w-5 text-green-600 shrink-0" />
+                      <div>
+                        <p className="text-sm font-semibold text-forest-green">{manuscriptFile.name}</p>
+                        <p className="text-xs text-forest-green/50">{(manuscriptFile.size / 1024).toFixed(0)} KB</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setManuscriptFile(null)}
+                      className="text-forest-green/30 hover:text-red-500 transition-colors"
+                      aria-label="Remove file"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+                {fileError && <p className="text-xs text-red-500 font-medium">{fileError}</p>}
+              </div>
+
+              {/* Book Cover Image upload */}
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs font-bold uppercase tracking-widest text-forest-green/50">
+                  Book Cover Image (optional) — .png / .jpg, max 5 MB
+                </span>
+                <p className="text-xs text-forest-green/30 -mt-0.5">
+                  This image will be displayed when your book is published and visible to readers.
+                </p>
+
+                {!coverFile ? (
+                  <label className="flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-sand/60 bg-sand/10 px-6 py-8 cursor-pointer hover:border-ochre/50 hover:bg-ochre/5 transition-all">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-sand/30 text-forest-green/30">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3 21h18M3 3h18M3 9h18" />
+                      </svg>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-semibold text-forest-green/60">Click to upload book cover</p>
+                      <p className="text-xs text-forest-green/30 mt-0.5">Accepted formats: .png, .jpg, .jpeg</p>
+                      <p className="text-xs text-forest-green/30">Recommended: 800 × 1200 px (portrait)</p>
+                    </div>
+                    <input
+                      type="file"
+                      accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+                      onChange={handleCoverChange}
+                      className="hidden"
+                    />
+                  </label>
+                ) : (
+                  <div className="flex items-start gap-4 rounded-xl border border-ochre/20 bg-ochre/5 p-4">
+                    {/* Preview thumbnail */}
+                    {coverPreview && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={coverPreview}
+                        alt="Cover preview"
+                        className="h-28 w-20 rounded-lg object-cover border border-sand/40 shadow-sm shrink-0"
+                      />
+                    )}
+                    <div className="flex flex-col justify-between flex-1 gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-forest-green">{coverFile.name}</p>
+                        <p className="text-xs text-forest-green/50 mt-0.5">{(coverFile.size / 1024).toFixed(0)} KB</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removeCover}
+                        className="self-start inline-flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-700 transition-colors"
+                        aria-label="Remove cover image"
+                      >
+                        <X className="h-3.5 w-3.5" /> Remove cover
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {coverError && <p className="text-xs text-red-500 font-medium">{coverError}</p>}
+              </div>
             </>
           )}
 
@@ -169,6 +328,8 @@ export default function NewSubmissionPage() {
                   ['Article Type', form.articleType],
                   ['Keywords', form.keywords],
                   ['Affiliation', form.affiliation],
+                  ['Manuscript File', manuscriptFile ? manuscriptFile.name : 'Not uploaded'],
+                  ['Cover Image', coverFile ? coverFile.name : 'Not uploaded'],
                 ].map(([label, value]) => (
                   <div key={label} className="flex gap-3 border-b border-sand/20 pb-3">
                     <span className="text-xs font-bold uppercase tracking-widest text-forest-green/40 w-28 shrink-0">{label}</span>
@@ -179,6 +340,13 @@ export default function NewSubmissionPage() {
               <p className="text-xs text-forest-green/40 mt-2">
                 A publication fee of ₹8,500 will be due only after your manuscript is accepted.
               </p>
+              {coverPreview && (
+                <div className="flex items-center gap-4 mt-2 pt-3 border-t border-sand/20">
+                  <span className="text-xs font-bold uppercase tracking-widest text-forest-green/40 w-28 shrink-0">Cover Preview</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={coverPreview} alt="Cover" className="h-24 w-16 rounded-lg object-cover border border-sand/40 shadow-sm" />
+                </div>
+              )}
             </>
           )}
         </div>
