@@ -16,21 +16,30 @@ const DEMO_MESSAGES = [
 
 export default function EditorCommunicationsPage() {
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [messages, setMessages] = useState(DEMO_MESSAGES);
+  const [threadReplies, setThreadReplies] = useState<Record<string, { text: string; time: string }[]>>({});
   const [selectedId, setSelectedId] = useState('1');
   const [replyText, setReplyText] = useState('');
   const [sentMsg, setSentMsg] = useState(false);
 
-  const filteredMessages = DEMO_MESSAGES.filter(m => {
+  const filteredMessages = messages.filter(m => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
     return m.sender.toLowerCase().includes(q) || m.manuscript.toLowerCase().includes(q) || m.subject.toLowerCase().includes(q);
   });
 
-  const activeMessage = filteredMessages.find(m => m.id === selectedId) ?? filteredMessages[0] ?? DEMO_MESSAGES[0];
+  const activeMessage = filteredMessages.find(m => m.id === selectedId) ?? filteredMessages[0] ?? messages[0];
 
   const handleSendReply = () => {
     if (!replyText.trim()) return;
+    const newReply = {
+      text: replyText,
+      time: 'Just now',
+    };
+    setThreadReplies(prev => ({
+      ...prev,
+      [activeMessage.id]: [...(prev[activeMessage.id] || []), newReply],
+    }));
     setSentMsg(true);
     setReplyText('');
     setTimeout(() => setSentMsg(false), 3000);
@@ -102,11 +111,23 @@ export default function EditorCommunicationsPage() {
             </div>
           </div>
 
-          {/* Message content */}
-          <div className="flex-1 bg-ivory/40 rounded-2xl border border-sand/30 p-5 overflow-y-auto mb-4">
-            <p className="text-xs text-forest-green/80 leading-relaxed font-medium">
-              {activeMessage.preview}
-            </p>
+          {/* Message content & Thread replies */}
+          <div className="flex-1 bg-ivory/40 rounded-2xl border border-sand/30 p-5 overflow-y-auto mb-4 space-y-4">
+            <div className="bg-white p-4 rounded-xl border border-sand/30 shadow-xs">
+              <p className="text-xs text-forest-green/80 leading-relaxed font-medium">
+                {activeMessage.preview}
+              </p>
+            </div>
+
+            {(threadReplies[activeMessage.id] || []).map((rep, i) => (
+              <div key={i} className="bg-forest-green/10 p-4 rounded-xl border border-forest-green/20 ml-6">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-forest-green">Editorial Office Reply</span>
+                  <span className="text-[9px] font-semibold text-forest-green/50">{rep.time}</span>
+                </div>
+                <p className="text-xs text-forest-green font-medium leading-relaxed">{rep.text}</p>
+              </div>
+            ))}
           </div>
 
           {/* Reply Form */}

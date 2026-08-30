@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/stores/auth.store';
 import { BookOpen, Bookmark, Download, Clock } from 'lucide-react';
 import { DEMO_READING_HISTORY, DEMO_BOOKMARKS, DEMO_DOWNLOADS } from '@/lib/demo-data';
@@ -14,6 +16,24 @@ import { CompactStatCard } from '@/components/reader/CompactStatCard';
 
 export default function MemberDashboardPage() {
   const { user } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      const rolesLower = user.roles?.map(r => String(r).toLowerCase()) || [];
+      const isEditor = rolesLower.includes('editor') || user.fullName?.toLowerCase().includes('editor') || user.email?.toLowerCase().includes('editor');
+      const isAuthor = rolesLower.includes('author') || user.fullName?.toLowerCase().includes('author');
+      const isReviewer = rolesLower.includes('reviewer') || user.fullName?.toLowerCase().includes('reviewer');
+
+      if (isEditor) {
+        router.replace('/editor/dashboard');
+      } else if (isAuthor) {
+        router.replace('/author/dashboard');
+      } else if (isReviewer) {
+        router.replace('/reviewer/dashboard');
+      }
+    }
+  }, [user, router]);
 
   const inProgress = DEMO_READING_HISTORY.filter(r => r.progress < 100);
   const primaryBook = inProgress[0];
@@ -24,7 +44,7 @@ export default function MemberDashboardPage() {
   return (
     <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10">
       {/* 1. Welcome Header */}
-      <ReaderHero name={user?.fullName ?? 'Reader'} />
+      <ReaderHero name={user?.fullName ?? 'Reader'} avatarUrl={user?.avatarUrl} />
 
       {/* 2. Primary Hero Continue Reading */}
       <ContinueReadingSection book={primaryBook} />

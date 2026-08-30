@@ -43,16 +43,46 @@ const REVIEWER_STATUS_STYLE: Record<string, string> = {
   'COMPLETED':   'bg-emerald-50 text-emerald-600 border-emerald-100',
 };
 
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
+
 export default function EditorSubmissionDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const s = DEMO_DETAIL[id as keyof typeof DEMO_DETAIL] ?? DEMO_DETAIL['MS-2025-041'];
+  const { submissions, editorUpdateStatus, editorPushToPublish } = useSubmissionsStore();
   
+  const found = submissions.find(sub => sub.id === id);
+  const s = found || {
+    id: id || 'MS-2026-0001',
+    title: 'New Author Manuscript Submission',
+    author: 'Dr. Registered Author',
+    affiliation: 'University Department',
+    authorEmail: 'author@vyompublication.com',
+    journal: 'VJLS',
+    articleType: 'Original Research Article',
+    status: 'UNDER REVIEW' as const,
+    submittedDate: new Date().toISOString().split('T')[0],
+    daysInPipeline: 1,
+    currentVersion: 1,
+    abstract: 'This is a newly submitted manuscript awaiting editorial screening and reviewer assignment.',
+    keywords: ['Research', 'Academic', 'Scholarly'],
+    assignedReviewers: [],
+    reviewerCount: 0,
+    editorName: 'Prof. Shital R Kalekar',
+  };
+
   const [decision, setDecision] = useState('');
   const [comments, setComments] = useState('');
   const [decisionSaved, setDecisionSaved] = useState(false);
 
   const handleDecision = () => {
     if (!decision) return;
+    if (decision === 'ACCEPT' || decision === 'SCHEDULE') {
+      editorPushToPublish(s.id);
+    } else {
+      let nextStatus: any = 'UNDER REVIEW';
+      if (decision === 'REVISE') nextStatus = 'REVISION';
+      else if (decision === 'REJECT') nextStatus = 'REJECTED';
+      editorUpdateStatus(s.id, nextStatus, comments);
+    }
     setDecisionSaved(true);
     setTimeout(() => setDecisionSaved(false), 4000);
   };
@@ -73,7 +103,7 @@ export default function EditorSubmissionDetailPage({ params }: { params: { id: s
           <div>
             <div className="flex items-center gap-2 flex-wrap mb-1">
               <span className="text-xs font-bold text-ochre">{s.id}</span>
-              <span className="text-[10px] font-bold text-forest-green/45 uppercase tracking-wider">{s.journal} · {s.type}</span>
+              <span className="text-[10px] font-bold text-forest-green/45 uppercase tracking-wider">{s.journal} · {s.articleType || (s as any).type || 'Original Article'}</span>
               <span className="rounded-full bg-ochre/10 px-2.5 py-0.5 text-[9px] font-bold text-ochre uppercase tracking-widest">
                 {s.status}
               </span>
@@ -93,7 +123,7 @@ export default function EditorSubmissionDetailPage({ params }: { params: { id: s
             onClick={() => alert('Manuscript file download will be available once file storage is connected.')}
             className="rounded-full bg-forest-green px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-forest-green/90 transition-colors inline-flex items-center gap-1.5 shrink-0 shadow-sm self-start"
           >
-            <Download className="h-4 w-4" /> Download Manuscript PDF (v{s.version}.0)
+            <Download className="h-4 w-4" /> Download Manuscript PDF (v{s.currentVersion || (s as any).version || 1}.0)
           </button>
         </div>
 
@@ -149,11 +179,13 @@ export default function EditorSubmissionDetailPage({ params }: { params: { id: s
             </div>
 
             <div className="flex flex-col gap-3">
-              {s.reviewers.map((rev, idx) => (
+              {((s.assignedReviewers && s.assignedReviewers.length > 0
+                ? s.assignedReviewers.map(rName => ({ name: rName, status: 'IN PROGRESS', deadline: '2026-09-15' }))
+                : (s as any).reviewers) || []).map((rev: any, idx: number) => (
                 <div key={idx} className="rounded-2xl border border-sand/30 bg-ivory/30 p-4 flex items-center justify-between gap-4">
                   <div>
                     <h4 className="font-bold text-forest-green text-xs">{rev.name}</h4>
-                    <p className="text-[10px] text-forest-green/40 mt-0.5">Review Due: {rev.deadline}</p>
+                    <p className="text-[10px] text-forest-green/40 mt-0.5">Review Due: {rev.deadline || '2026-09-15'}</p>
                   </div>
 
                   <span className={`rounded-full border px-3 py-1 text-[9px] font-bold uppercase tracking-widest ${REVIEWER_STATUS_STYLE[rev.status] || 'bg-sand/30 text-forest-green/60'}`}>
@@ -211,7 +243,7 @@ export default function EditorSubmissionDetailPage({ params }: { params: { id: s
             <div className="flex items-center justify-between border-t border-sand/20 pt-4">
               {decisionSaved ? (
                 <span className="flex items-center gap-2 text-xs font-semibold text-emerald-600">
-                  <CheckCircle className="h-4 w-4" /> Editorial decision recorded successfully (demo)
+                  <CheckCircle className="h-4 w-4" /> Editorial decision recorded successfully
                 </span>
               ) : (
                 <span className="text-[10px] text-forest-green/35 italic">Select decision and record remarks</span>
@@ -236,7 +268,7 @@ export default function EditorSubmissionDetailPage({ params }: { params: { id: s
             <div className="space-y-2 text-xs text-forest-green/70">
               <p><strong className="text-forest-green">Name:</strong> {s.author}</p>
               <p><strong className="text-forest-green">Affiliation:</strong> {s.affiliation}</p>
-              <p><strong className="text-forest-green">Email:</strong> {s.email}</p>
+              <p><strong className="text-forest-green">Email:</strong> {s.authorEmail || (s as any).email}</p>
             </div>
           </section>
 
@@ -244,10 +276,10 @@ export default function EditorSubmissionDetailPage({ params }: { params: { id: s
             <h3 className="font-display text-base font-bold text-forest-green">Submission Metadata</h3>
             <div className="space-y-2 text-xs text-forest-green/70">
               <p><strong className="text-forest-green">Journal:</strong> {s.journal}</p>
-              <p><strong className="text-forest-green">Manuscript Type:</strong> {s.type}</p>
+              <p><strong className="text-forest-green">Manuscript Type:</strong> {s.articleType || (s as any).type || 'Original Article'}</p>
               <p><strong className="text-forest-green">Submitted Date:</strong> {s.submittedDate}</p>
               <p><strong className="text-forest-green">Days in Pipeline:</strong> {s.daysInPipeline} days</p>
-              <p><strong className="text-forest-green">Draft Version:</strong> v{s.version}.0</p>
+              <p><strong className="text-forest-green">Draft Version:</strong> v{s.currentVersion || (s as any).version || 1}.0</p>
             </div>
           </section>
         </div>

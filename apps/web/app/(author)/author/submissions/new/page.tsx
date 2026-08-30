@@ -12,12 +12,17 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/common/PageHeader';
 import { CheckCircle, ChevronRight, UploadCloud, X } from 'lucide-react';
 import { DEMO_JOURNALS, DEMO_ARTICLE_TYPES } from '@/lib/demo-data';
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
+import { useAuthStore } from '@/lib/stores/auth.store';
 
 const STEPS = ['Abstract Details', 'Keywords & Metadata', 'Declaration', 'Submit'];
 
 export default function NewSubmissionPage() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionId, setSubmissionId] = useState('');
+  const [stepError, setStepError] = useState('');
   const [form, setForm] = useState({
     title: '', journal: '', articleType: '', abstract: '',
     keywords: '', affiliation: '', coAuthors: '', fundingInfo: '',
@@ -29,7 +34,10 @@ export default function NewSubmissionPage() {
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
   const [coverError, setCoverError] = useState('');
 
-  const set = (k: string, v: string | boolean) => setForm(f => ({ ...f, [k]: v }));
+  const set = (k: string, v: string | boolean) => {
+    setStepError('');
+    setForm(f => ({ ...f, [k]: v }));
+  };
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
@@ -79,25 +87,116 @@ export default function NewSubmissionPage() {
     setCoverError('');
   }
 
+  function validateCurrentStep(): boolean {
+    setStepError('');
+    if (step === 0) {
+      if (!form.title.trim() || form.title.trim().length < 5) {
+        setStepError('Please enter a valid manuscript title (at least 5 characters).');
+        return false;
+      }
+      if (!form.journal) {
+        setStepError('Please select a target journal.');
+        return false;
+      }
+      if (!form.articleType) {
+        setStepError('Please select an article type.');
+        return false;
+      }
+      const abstractLength = form.abstract.trim().length;
+      const wordCount = form.abstract.trim().split(/\s+/).filter(Boolean).length;
+      if (abstractLength < 50) {
+        setStepError('Abstract must be at least 50 characters long.');
+        return false;
+      }
+      if (wordCount > 1000) {
+        setStepError('Abstract word count exceeds the limit of 1000 words.');
+        return false;
+      }
+      return true;
+    }
+
+    if (step === 1) {
+      const keywordList = form.keywords.split(',').map(k => k.trim()).filter(Boolean);
+      if (keywordList.length < 3) {
+        setStepError('Please provide at least 3 comma-separated keywords.');
+        return false;
+      }
+      if (!form.affiliation.trim() || form.affiliation.trim().length < 3) {
+        setStepError('Please enter your institutional affiliation.');
+        return false;
+      }
+      return true;
+    }
+
+    if (step === 2) {
+      if (!form.originalWork || !form.conflictOfInterest || !form.ethicsApproval) {
+        setStepError('You must acknowledge and confirm all author declarations to proceed.');
+        return false;
+      }
+      return true;
+    }
+
+    return true;
+  }
+
+  function handleNextStep() {
+    if (validateCurrentStep()) {
+      setStep(s => s + 1);
+    }
+  }
+
+  const { addSubmission } = useSubmissionsStore();
+  const { user } = useAuthStore();
+
+  async function handleSubmitFinal() {
+    if (!validateCurrentStep()) return;
+
+    setIsSubmitting(true);
+    try {
+      await new Promise(resolve => setTimeout(resolve, 600));
+
+      const keywordList = form.keywords.split(',').map(k => k.trim()).filter(Boolean);
+
+      const created = addSubmission({
+        title: form.title,
+        journal: form.journal,
+        articleType: form.articleType,
+        abstract: form.abstract,
+        keywords: keywordList,
+        author: user?.fullName || 'Dr. Author',
+        authorEmail: user?.email || 'author@vyompublication.com',
+        affiliation: form.affiliation,
+        manuscriptFile: manuscriptFile ? manuscriptFile.name : undefined,
+        coverImage: coverPreview || undefined,
+      });
+
+      setSubmissionId(created.id);
+      setSubmitted(true);
+    } catch {
+      setStepError('Failed to submit abstract. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   if (submitted) {
     return (
       <>
         <PageHeader title="New Submission" role="author" />
         <main className="flex-1 flex flex-col items-center justify-center gap-6 px-8 py-16">
-          <div className="rounded-full bg-green-50 p-5">
+          <div className="rounded-full bg-green-50 p-5 border border-green-200">
             <CheckCircle className="h-12 w-12 text-green-600" />
           </div>
-          <h2 className="font-display text-2xl font-bold text-forest-green">Abstract Submitted!</h2>
+          <h2 className="font-display text-2xl font-bold text-forest-green">Abstract Submitted Successfully!</h2>
           <p className="text-sm text-forest-green/60 text-center max-w-md">
-            Your abstract has been received. The editorial team will review it within 3–5 business days.
-            You will be notified by email once a decision is made.
+            Your abstract has been formally recorded. The editorial office will evaluate your submission within 3–5 business days.
           </p>
-          <div className="rounded-2xl border border-sand/40 bg-white px-8 py-5 text-center">
-            <p className="text-xs text-forest-green/40 uppercase tracking-widest mb-1">Submission ID</p>
-            <p className="font-display text-xl font-bold text-ochre">MS-2025-{String(Date.now()).slice(-3)}</p>
+          <div className="rounded-2xl border border-sand/40 bg-white px-8 py-5 text-center shadow-sm">
+            <p className="text-xs text-forest-green/40 uppercase tracking-widest mb-1">Official Submission ID</p>
+            <p className="font-display text-2xl font-bold text-ochre">{submissionId || `MS-2026-${String(Date.now()).slice(-4)}`}</p>
           </div>
-          <Link href="/author/submissions" className="rounded-full bg-ochre px-7 py-3 text-sm font-bold text-ivory hover:bg-ochre/90">
-            View My Submissions
+          <Link href="/author/submissions" className="rounded-full bg-ochre px-7 py-3 text-sm font-bold text-ivory hover:bg-ochre/90 transition-colors">
+            View My Submissions →
           </Link>
         </main>
       </>
@@ -128,7 +227,14 @@ export default function NewSubmissionPage() {
           ))}
         </div>
 
-        <div className="rounded-2xl border border-sand/40 bg-white p-6 flex flex-col gap-5">
+        <div className="rounded-2xl border border-sand/40 bg-white p-6 flex flex-col gap-5 shadow-sm">
+          {stepError && (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-xs text-red-600 font-semibold flex items-center justify-between">
+              <span>{stepError}</span>
+              <button onClick={() => setStepError('')} className="text-red-400 hover:text-red-600">✕</button>
+            </div>
+          )}
+
           {step === 0 && (
             <>
               <h2 className="font-display text-lg font-bold text-forest-green">Abstract Details</h2>
@@ -155,14 +261,14 @@ export default function NewSubmissionPage() {
                 </select>
               </label>
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-bold uppercase tracking-widest text-forest-green/50">Abstract * (up to 1000 words)</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-forest-green/50">Abstract * (min 50 chars, up to 1000 words)</span>
                 <textarea value={form.abstract} onChange={e => set('abstract', e.target.value)}
                   rows={10} placeholder="Paste your abstract here..."
                   className="rounded-xl border border-sand/40 px-4 py-2.5 text-sm text-forest-green focus:outline-none focus:border-ochre resize-none" />
                 <span className={`text-xs text-right font-medium transition-colors ${
                   form.abstract.split(/\s+/).filter(Boolean).length > 1000
-                    ? 'text-red-500'
-                    : 'text-forest-green/30'
+                    ? 'text-red-500 font-bold'
+                    : 'text-forest-green/40'
                 }`}>
                   {form.abstract.split(/\s+/).filter(Boolean).length} / 1000 words
                 </span>
@@ -228,7 +334,6 @@ export default function NewSubmissionPage() {
                     <div className="text-center">
                       <p className="text-sm font-semibold text-forest-green/60">Click to upload book cover</p>
                       <p className="text-xs text-forest-green/30 mt-0.5">Accepted formats: .png, .jpg, .jpeg</p>
-                      <p className="text-xs text-forest-green/30">Recommended: 800 × 1200 px (portrait)</p>
                     </div>
                     <input
                       type="file"
@@ -239,7 +344,6 @@ export default function NewSubmissionPage() {
                   </label>
                 ) : (
                   <div className="flex items-start gap-4 rounded-xl border border-ochre/20 bg-ochre/5 p-4">
-                    {/* Preview thumbnail */}
                     {coverPreview && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -273,9 +377,9 @@ export default function NewSubmissionPage() {
             <>
               <h2 className="font-display text-lg font-bold text-forest-green">Keywords & Metadata</h2>
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-bold uppercase tracking-widest text-forest-green/50">Keywords * (comma-separated, 4–8)</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-forest-green/50">Keywords * (comma-separated, min 3)</span>
                 <input value={form.keywords} onChange={e => set('keywords', e.target.value)}
-                  placeholder="e.g. bilingualism, language acquisition, phonology"
+                  placeholder="e.g. artificial intelligence, neural networks, machine learning"
                   className="rounded-xl border border-sand/40 px-4 py-2.5 text-sm text-forest-green focus:outline-none focus:border-ochre" />
               </label>
               <label className="flex flex-col gap-1.5">
@@ -301,18 +405,18 @@ export default function NewSubmissionPage() {
 
           {step === 2 && (
             <>
-              <h2 className="font-display text-lg font-bold text-forest-green">Author Declaration</h2>
-              <p className="text-xs text-forest-green/50">Please confirm all declarations before submitting.</p>
+              <h2 className="font-display text-lg font-bold text-forest-green">Author Declarations</h2>
+              <p className="text-xs text-forest-green/60">Please read and confirm all author compliance declarations before proceeding.</p>
               {[
-                { key: 'originalWork', label: 'This manuscript is original work and has not been published or submitted elsewhere.' },
-                { key: 'conflictOfInterest', label: 'I declare no conflict of interest, or have disclosed all relevant conflicts in the manuscript.' },
-                { key: 'ethicsApproval', label: 'All research involving human or animal subjects has received appropriate ethics approval.' },
+                { key: 'originalWork', label: 'I confirm this manuscript is original work and has not been published or simultaneously submitted elsewhere.' },
+                { key: 'conflictOfInterest', label: 'I declare no undisclosed conflict of interest related to this manuscript.' },
+                { key: 'ethicsApproval', label: 'I confirm all research protocols involving subjects adhere to ethical standards and approvals.' },
               ].map(({ key, label }) => (
-                <label key={key} className="flex items-start gap-3 cursor-pointer">
+                <label key={key} className="flex items-start gap-3 cursor-pointer p-2.5 rounded-lg border border-sand/30 hover:bg-sand/10 transition-colors">
                   <input type="checkbox" checked={form[key as keyof typeof form] as boolean}
                     onChange={e => set(key, e.target.checked)}
                     className="mt-0.5 h-4 w-4 accent-ochre" />
-                  <span className="text-sm text-forest-green/70">{label}</span>
+                  <span className="text-sm font-medium text-forest-green/80">{label}</span>
                 </label>
               ))}
             </>
@@ -320,7 +424,7 @@ export default function NewSubmissionPage() {
 
           {step === 3 && (
             <>
-              <h2 className="font-display text-lg font-bold text-forest-green">Review & Submit</h2>
+              <h2 className="font-display text-lg font-bold text-forest-green">Review & Submit Abstract</h2>
               <div className="flex flex-col gap-3 text-sm">
                 {[
                   ['Title', form.title],
@@ -332,17 +436,17 @@ export default function NewSubmissionPage() {
                   ['Cover Image', coverFile ? coverFile.name : 'Not uploaded'],
                 ].map(([label, value]) => (
                   <div key={label} className="flex gap-3 border-b border-sand/20 pb-3">
-                    <span className="text-xs font-bold uppercase tracking-widest text-forest-green/40 w-28 shrink-0">{label}</span>
-                    <span className="text-forest-green/80">{value || '—'}</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-forest-green/40 w-32 shrink-0">{label}</span>
+                    <span className="text-forest-green/80 font-medium">{value || '—'}</span>
                   </div>
                 ))}
               </div>
-              <p className="text-xs text-forest-green/40 mt-2">
-                A publication fee of ₹8,500 will be due only after your manuscript is accepted.
+              <p className="text-xs text-forest-green/50 mt-2">
+                Note: Standard publication fee of ₹8,500 is due only after formal peer review acceptance.
               </p>
               {coverPreview && (
                 <div className="flex items-center gap-4 mt-2 pt-3 border-t border-sand/20">
-                  <span className="text-xs font-bold uppercase tracking-widest text-forest-green/40 w-28 shrink-0">Cover Preview</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-forest-green/40 w-32 shrink-0">Cover Preview</span>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={coverPreview} alt="Cover" className="h-24 w-16 rounded-lg object-cover border border-sand/40 shadow-sm" />
                 </div>
@@ -351,20 +455,20 @@ export default function NewSubmissionPage() {
           )}
         </div>
 
-        <div className="flex justify-between">
-          <button onClick={() => setStep(s => s - 1)} disabled={step === 0}
+        <div className="flex justify-between items-center">
+          <button onClick={() => { setStepError(''); setStep(s => s - 1); }} disabled={step === 0 || isSubmitting}
             className="rounded-full border border-sand/50 px-6 py-2.5 text-xs font-bold uppercase text-forest-green/60 hover:border-forest-green hover:text-forest-green disabled:opacity-30 transition-colors">
             ← Back
           </button>
           {step < STEPS.length - 1 ? (
-            <button onClick={() => setStep(s => s + 1)}
-              className="rounded-full bg-ochre px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90">
+            <button onClick={handleNextStep}
+              className="rounded-full bg-ochre px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90 transition-colors">
               Continue →
             </button>
           ) : (
-            <button onClick={() => setSubmitted(true)}
-              className="rounded-full bg-forest-green px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-forest-green/90">
-              Submit Abstract
+            <button onClick={handleSubmitFinal} disabled={isSubmitting}
+              className="rounded-full bg-forest-green px-7 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-forest-green/90 transition-colors disabled:opacity-60">
+              {isSubmitting ? 'Submitting Abstract…' : 'Submit Abstract →'}
             </button>
           )}
         </div>

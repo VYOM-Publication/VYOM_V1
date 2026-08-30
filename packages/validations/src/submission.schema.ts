@@ -6,14 +6,28 @@ export const createAbstractSchema = z.object({
     .string()
     .min(5, 'Title must be at least 5 characters')
     .max(200, 'Title must not exceed 200 characters'),
+  journal: z.string().min(1, 'Target journal is required'),
+  articleType: z.string().min(1, 'Article type is required'),
   abstract: z
     .string()
     .min(50, 'Abstract must be at least 50 characters')
-    .max(2000, 'Abstract must not exceed 2000 characters'),
+    .max(5000, 'Abstract must not exceed 5000 characters'),
   keywords: z
     .array(z.string().min(1, 'Keyword cannot be empty'))
-    .min(1, 'Provide at least 1 keyword')
+    .min(3, 'Provide at least 3 keywords')
     .max(10, 'Provide at most 10 keywords'),
+  affiliation: z.string().min(2, 'Institutional affiliation is required'),
+  coAuthors: z.string().optional(),
+  fundingInfo: z.string().optional(),
+  originalWork: z.literal(true, {
+    errorMap: () => ({ message: 'You must confirm that this is original work' }),
+  }),
+  conflictOfInterest: z.literal(true, {
+    errorMap: () => ({ message: 'You must complete the conflict of interest declaration' }),
+  }),
+  ethicsApproval: z.literal(true, {
+    errorMap: () => ({ message: 'You must complete the ethics approval declaration' }),
+  }),
 });
 
 export const assignReviewersSchema = z.object({

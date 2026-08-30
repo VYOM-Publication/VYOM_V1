@@ -232,7 +232,7 @@ export default function ContactPage() {
             <div className="rounded-2xl border border-sand/40 bg-ivory p-6 flex flex-col gap-3">
               <h3 className="font-display text-base font-bold text-forest-green">Ready to Publish?</h3>
               <p className="text-sm text-forest-green/60 leading-relaxed">Create your author account and start your submission today.</p>
-              <Link href="/publication-fee"
+              <Link href="/register?role=author"
                 className="inline-flex items-center gap-2 rounded-full bg-ochre px-6 py-2.5 text-sm font-bold text-ivory hover:bg-ochre/90 transition-colors">
                 Publish With Us <ArrowRight className="h-4 w-4" />
               </Link>

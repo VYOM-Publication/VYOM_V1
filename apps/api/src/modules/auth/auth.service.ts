@@ -22,6 +22,16 @@ export class AuthService {
     fullName: string,
     email: string,
     password: string,
+    role?: string,
+    meta?: {
+      specialization?: string;
+      designation?: string;
+      affiliation?: string;
+      orcid?: string;
+      phone?: string;
+      country?: string;
+      bio?: string;
+    },
   ): Promise<{ user: Record<string, unknown> }> {
     const existing = await User.findOne({ email });
     if (existing) {
@@ -32,15 +42,24 @@ export class AuthService {
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
+    const assignedRole = role === 'author' ? Role.AUTHOR : Role.MEMBER;
+
     const user = await User.create({
       fullName,
       email,
       passwordHash,
-      roles: [Role.MEMBER],
+      roles: [assignedRole],
       status: UserStatus.PENDING_VERIFICATION,
       emailVerified: false,
       emailVerificationToken: verificationToken,
       emailVerificationTokenExpiry: verificationTokenExpiry,
+      specialization: meta?.specialization,
+      designation: meta?.designation,
+      affiliation: meta?.affiliation,
+      orcid: meta?.orcid,
+      phone: meta?.phone,
+      country: meta?.country,
+      bio: meta?.bio,
     });
 
     // Fire-and-forget — do not fail registration if email fails

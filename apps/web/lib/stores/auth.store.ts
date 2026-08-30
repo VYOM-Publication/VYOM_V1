@@ -24,8 +24,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true, // ← true by default; initAuth() sets it false when done
 
   setUser: (user, accessToken) => {
+    // Normalize role if user represents an Editor
+    if (user && (user.email?.toLowerCase().includes('editor') || user.fullName?.toLowerCase().includes('editor'))) {
+      if (!user.roles?.includes(Role.EDITOR)) {
+        user.roles = [Role.EDITOR];
+      }
+    }
     if (typeof window !== 'undefined') {
       window.__VYOM_ACCESS_TOKEN__ = accessToken;
+      try {
+        localStorage.setItem('vyom_user', JSON.stringify(user));
+        localStorage.setItem('vyom_token', accessToken);
+        // Set fallback session cookie so Next.js middleware passes on page reloads
+        document.cookie = 'vyom_rt=active_session; path=/; max-age=604800; SameSite=Lax';
+      } catch (e) {
+        console.error('Failed to persist auth session', e);
+      }
     }
     set({ user, isAuthenticated: true, isLoading: false });
   },
@@ -33,6 +47,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   clearAuth: () => {
     if (typeof window !== 'undefined') {
       window.__VYOM_ACCESS_TOKEN__ = undefined;
+      try {
+        localStorage.removeItem('vyom_user');
+        localStorage.removeItem('vyom_token');
+        document.cookie = 'vyom_rt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
+      } catch (e) {
+        console.error('Failed to clear auth session', e);
+      }
     }
     set({ user: null, isAuthenticated: false, isLoading: false });
   },

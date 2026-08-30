@@ -18,8 +18,28 @@ const cookieOptions = {
 export class AuthController {
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { fullName, email, password } = req.body;
-      const result = await authService.register(fullName, email, password);
+      const {
+        fullName,
+        email,
+        password,
+        role,
+        specialization,
+        designation,
+        affiliation,
+        orcid,
+        phone,
+        country,
+        bio,
+      } = req.body;
+      const result = await authService.register(fullName, email, password, role, {
+        specialization,
+        designation,
+        affiliation,
+        orcid,
+        phone,
+        country,
+        bio,
+      });
       sendCreated(res, result, 'Registration successful. Please check your email to verify your account.');
     } catch (err) {
       next(err);

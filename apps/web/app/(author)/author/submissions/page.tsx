@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { Plus, FileText, ArrowRight, DollarSign } from 'lucide-react';
-import { DEMO_SUBMISSIONS } from '@/lib/demo-data';
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { EmptyState } from '@/components/common/EmptyState';
 import { SubmissionPipeline } from '@/components/author/SubmissionPipeline';
 import { SectionHeader } from '@/components/reader/SectionHeader';
 
 export default function AuthorSubmissionsPage() {
+  const { submissions } = useSubmissionsStore();
   return (
     <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-10">
       {/* Page Header */}
@@ -27,7 +28,7 @@ export default function AuthorSubmissionsPage() {
 
       {/* Submissions List */}
       <div className="space-y-6">
-        {DEMO_SUBMISSIONS.length === 0 ? (
+        {submissions.length === 0 ? (
           <EmptyState
             icon={FileText}
             title="No submissions yet."
@@ -43,7 +44,7 @@ export default function AuthorSubmissionsPage() {
           />
         ) : (
           <div className="flex flex-col gap-6">
-            {DEMO_SUBMISSIONS.map(s => {
+            {submissions.map(s => {
               const needsPayment = s.status === 'ACCEPTED' && s.paymentStatus === 'pending';
               const needsRevision = s.status === 'REVISION';
               

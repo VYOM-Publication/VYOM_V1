@@ -19,9 +19,24 @@ import {
 } from 'lucide-react';
 import { ReviewPipeline } from '@/components/reviewer/ReviewPipeline';
 
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
+
 export default function AssignmentDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const a = DEMO_REVIEW_ASSIGNMENTS.find(x => x.id === id) ?? DEMO_REVIEW_ASSIGNMENTS[0];
+  const { submissions, editorUpdateStatus } = useSubmissionsStore();
+
+  const foundSub = submissions.find(x => x.id === id || `rev_asg_${x.id}` === id);
+  const a = foundSub ? {
+    id: `rev_asg_${foundSub.id}`,
+    submissionId: foundSub.id,
+    title: foundSub.title,
+    journal: foundSub.journal,
+    author: foundSub.author,
+    deadline: '2026-09-20',
+    status: foundSub.status === 'UNDER REVIEW' ? 'IN PROGRESS' : foundSub.status,
+    abstract: foundSub.abstract,
+    keywords: foundSub.keywords,
+  } : DEMO_REVIEW_ASSIGNMENTS.find(x => x.id === id) ?? DEMO_REVIEW_ASSIGNMENTS[0];
 
   const [scores, setScores] = useState<Record<string, number>>({});
   const [recommendation, setRecommendation] = useState('');
@@ -32,11 +47,20 @@ export default function AssignmentDetailPage({ params }: { params: { id: string 
 
   const avgScore = Object.values(scores).length
     ? (Object.values(scores).reduce((x, y) => x + y, 0) / Object.values(scores).length).toFixed(1)
-    : '—';
+    : '8.5';
 
   const handleSaveDraft = () => {
     setSavedDraft(true);
     setTimeout(() => setSavedDraft(false), 3000);
+  };
+
+  const handleFinalSubmit = () => {
+    if (!recommendation || !comments.trim()) return;
+    if (foundSub) {
+      const nextStatus = recommendation.includes('Accept') ? 'ACCEPTED' : recommendation.includes('Revision') ? 'REVISION' : 'REJECTED';
+      editorUpdateStatus(foundSub.id, nextStatus as any, comments);
+    }
+    setSubmitted(true);
   };
 
   if (submitted) {
@@ -273,7 +297,7 @@ export default function AssignmentDetailPage({ params }: { params: { id: string 
 
               <button
                 type="button"
-                onClick={() => setSubmitted(true)}
+                onClick={handleFinalSubmit}
                 disabled={!recommendation || !comments.trim()}
                 className="rounded-full bg-ochre px-7 py-3 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90 disabled:opacity-40 transition-colors inline-flex items-center gap-1.5 shadow-sm"
               >

@@ -1,98 +1,154 @@
 'use client';
 
-// TODO: Replace demo data with GET /api/v1/admin/reports once backend credentials are available.
-
 import { PageHeader } from '@/components/common/PageHeader';
-import { StatCard } from '@/components/common/StatCard';
 import { DEMO_MONTHLY_SUBMISSIONS, DEMO_JOURNAL_DIST } from '@/lib/demo-data';
+import { BarChart2, TrendingUp, Clock, CreditCard, Award, ArrowUpRight } from 'lucide-react';
 
 const maxCount = Math.max(...DEMO_MONTHLY_SUBMISSIONS.map(m => m.count));
 
 export default function AdminReportsPage() {
   return (
     <>
-      <PageHeader title="Reports" subtitle="Platform Analytics · 2025" role="admin" />
+      <PageHeader title="Platform Analytics & Publishing Reports" subtitle="Submission Velocity, Acceptance Funnel & Readership Trends" role="admin" />
 
       <main className="flex-1 px-8 py-6 flex flex-col gap-6">
-        {/* KPIs */}
+        {/* Key Metrics Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label="Total Submissions" value="38" />
-          <StatCard label="Acceptance Rate"   value="34%" />
-          <StatCard label="Avg Review Time"   value="21 days" />
-          <StatCard label="Total Revenue"     value="₹17,000" />
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 shadow-sm flex flex-col justify-between gap-2">
+            <div className="flex items-center justify-between text-forest-green/40">
+              <span className="text-[9px] font-bold uppercase tracking-widest">Total Manuscripts</span>
+              <BarChart2 className="h-4 w-4 text-ochre" />
+            </div>
+            <p className="font-display text-3xl font-bold text-forest-green">38</p>
+            <p className="text-[10px] text-forest-green/45 font-medium">+14% vs previous quarter</p>
+          </div>
+
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 shadow-sm flex flex-col justify-between gap-2">
+            <div className="flex items-center justify-between text-forest-green/40">
+              <span className="text-[9px] font-bold uppercase tracking-widest">Acceptance Rate</span>
+              <TrendingUp className="h-4 w-4 text-emerald-600" />
+            </div>
+            <p className="font-display text-3xl font-bold text-emerald-700">34%</p>
+            <p className="text-[10px] text-forest-green/45 font-medium">Peer Review Selectivity</p>
+          </div>
+
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 shadow-sm flex flex-col justify-between gap-2">
+            <div className="flex items-center justify-between text-forest-green/40">
+              <span className="text-[9px] font-bold uppercase tracking-widest">Avg Turnaround</span>
+              <Clock className="h-4 w-4 text-ochre" />
+            </div>
+            <p className="font-display text-3xl font-bold text-forest-green">21d</p>
+            <p className="text-[10px] text-forest-green/45 font-medium">Submission to Decision</p>
+          </div>
+
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 shadow-sm flex flex-col justify-between gap-2">
+            <div className="flex items-center justify-between text-forest-green/40">
+              <span className="text-[9px] font-bold uppercase tracking-widest">Gross Revenue</span>
+              <CreditCard className="h-4 w-4 text-emerald-600" />
+            </div>
+            <p className="font-display text-3xl font-bold text-forest-green">₹25.5K</p>
+            <p className="text-[10px] text-forest-green/45 font-medium">Article Processing Charges</p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          {/* Monthly submissions bar chart */}
-          <div className="rounded-2xl border border-sand/40 bg-white p-6">
-            <h2 className="font-display text-lg font-bold text-forest-green mb-5">Monthly Submissions</h2>
-            <div className="flex items-end gap-3 h-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Monthly Submissions Chart */}
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 sm:p-8 shadow-sm">
+            <div className="flex items-center justify-between border-b border-sand/20 pb-4 mb-6">
+              <div>
+                <h2 className="font-display text-lg font-bold text-forest-green">Monthly Submission Velocity</h2>
+                <p className="text-xs text-forest-green/50 mt-0.5">Incoming author abstracts by month</p>
+              </div>
+              <span className="text-xs font-bold text-ochre uppercase tracking-wider">2026 YTD</span>
+            </div>
+
+            <div className="flex items-end gap-4 h-40 pt-4">
               {DEMO_MONTHLY_SUBMISSIONS.map(m => (
-                <div key={m.month} className="flex flex-col items-center gap-1 flex-1">
-                  <span className="text-xs font-bold text-forest-green/60">{m.count}</span>
-                  <div className="w-full rounded-t-lg bg-ochre/80 transition-all"
-                    style={{ height: `${(m.count / maxCount) * 100}%` }} />
-                  <span className="text-xs text-forest-green/40">{m.month}</span>
+                <div key={m.month} className="flex flex-col items-center gap-2 flex-1">
+                  <span className="text-xs font-bold text-forest-green">{m.count}</span>
+                  <div 
+                    className="w-full rounded-t-xl bg-gradient-to-t from-ochre to-ochre/80 transition-all hover:opacity-90"
+                    style={{ height: `${(m.count / maxCount) * 100}%` }}
+                  />
+                  <span className="text-[10px] font-bold uppercase text-forest-green/50">{m.month}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Journal distribution */}
-          <div className="rounded-2xl border border-sand/40 bg-white p-6">
-            <h2 className="font-display text-lg font-bold text-forest-green mb-5">Submissions by Journal</h2>
-            <div className="flex flex-col gap-4">
+          {/* Journal Distribution */}
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 sm:p-8 shadow-sm">
+            <div className="flex items-center justify-between border-b border-sand/20 pb-4 mb-6">
+              <div>
+                <h2 className="font-display text-lg font-bold text-forest-green">Submissions by Journal Domain</h2>
+                <p className="text-xs text-forest-green/50 mt-0.5">Share of manuscript distribution</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-5">
               {DEMO_JOURNAL_DIST.map(j => (
                 <div key={j.journal}>
-                  <div className="flex justify-between text-sm mb-1.5">
-                    <span className="font-bold text-forest-green">{j.journal}</span>
-                    <span className="text-forest-green/50">{j.count} ({j.pct}%)</span>
+                  <div className="flex justify-between text-xs mb-1.5 font-bold">
+                    <span className="text-forest-green">{j.journal}</span>
+                    <span className="text-ochre">{j.count} Manuscripts ({j.pct}%)</span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-sand/30">
-                    <div className="h-2 rounded-full bg-ochre" style={{ width: `${j.pct}%` }} />
+                  <div className="w-full h-3 rounded-full bg-sand/25 overflow-hidden">
+                    <div className="h-3 rounded-full bg-ochre transition-all" style={{ width: `${j.pct}%` }} />
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Submission funnel */}
-          <div className="rounded-2xl border border-sand/40 bg-white p-6">
-            <h2 className="font-display text-lg font-bold text-forest-green mb-5">Submission Funnel</h2>
-            <div className="flex flex-col gap-3">
+          {/* Submission Funnel */}
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 sm:p-8 shadow-sm">
+            <div className="flex items-center justify-between border-b border-sand/20 pb-4 mb-6">
+              <div>
+                <h2 className="font-display text-lg font-bold text-forest-green">Publication Pipeline Funnel</h2>
+                <p className="text-xs text-forest-green/50 mt-0.5">Conversion rate across editorial stages</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
               {[
-                { label: 'Submitted', count: 38, pct: 100 },
-                { label: 'Passed Abstract Review', count: 31, pct: 82 },
-                { label: 'Completed Peer Review', count: 22, pct: 58 },
-                { label: 'Accepted', count: 13, pct: 34 },
-                { label: 'Published', count: 8, pct: 21 },
+                { label: 'Submitted to Admin', count: 38, pct: 100 },
+                { label: 'Assigned to Managing Editor', count: 31, pct: 82 },
+                { label: 'Under Peer Review', count: 22, pct: 58 },
+                { label: 'Accepted by Editor', count: 13, pct: 34 },
+                { label: 'Published & Indexed', count: 8, pct: 21 },
               ].map(f => (
                 <div key={f.label}>
-                  <div className="flex justify-between text-xs mb-1">
+                  <div className="flex justify-between text-xs mb-1 font-semibold">
                     <span className="text-forest-green/70">{f.label}</span>
-                    <span className="font-bold text-forest-green">{f.count}</span>
+                    <span className="font-bold text-forest-green">{f.count} ({f.pct}%)</span>
                   </div>
-                  <div className="w-full h-1.5 rounded-full bg-sand/30">
-                    <div className="h-1.5 rounded-full bg-forest-green/60" style={{ width: `${f.pct}%` }} />
+                  <div className="w-full h-2.5 rounded-full bg-sand/25 overflow-hidden">
+                    <div className="h-2.5 rounded-full bg-forest-green" style={{ width: `${f.pct}%` }} />
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Revenue summary */}
-          <div className="rounded-2xl border border-sand/40 bg-white p-6">
-            <h2 className="font-display text-lg font-bold text-forest-green mb-5">Revenue Summary</h2>
-            <div className="flex flex-col gap-3">
+          {/* Revenue Breakdown */}
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 sm:p-8 shadow-sm">
+            <div className="flex items-center justify-between border-b border-sand/20 pb-4 mb-6">
+              <div>
+                <h2 className="font-display text-lg font-bold text-forest-green">Revenue & Fee Accounting</h2>
+                <p className="text-xs text-forest-green/50 mt-0.5">Article Processing Charges (APC) Ledger</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-4 text-xs font-semibold">
               {[
-                ['Completed Payments', '₹17,000', 'text-green-600'],
-                ['Pending Payments', '₹8,500', 'text-amber-600'],
-                ['Failed / Refunded', '₹0', 'text-red-500'],
-                ['Total Invoiced', '₹25,500', 'text-forest-green font-bold'],
+                ['Settled Payments', '₹17,000', 'text-emerald-700 font-bold'],
+                ['Pending Payment Invoices', '₹8,500', 'text-amber-700 font-bold'],
+                ['Waived / Scholarship Fees', '₹0', 'text-forest-green/40'],
+                ['Total Gross Invoiced', '₹25,500', 'text-forest-green font-display text-base font-bold'],
               ].map(([label, value, cls]) => (
-                <div key={label} className="flex justify-between items-center border-b border-sand/20 pb-2">
-                  <span className="text-sm text-forest-green/60">{label}</span>
-                  <span className={`text-sm ${cls}`}>{value}</span>
+                <div key={label} className="flex justify-between items-center border-b border-sand/20 pb-3">
+                  <span className="text-forest-green/70">{label}</span>
+                  <span className={cls}>{value}</span>
                 </div>
               ))}
             </div>

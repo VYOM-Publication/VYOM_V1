@@ -4,9 +4,12 @@ import Link from 'next/link';
 import {
   PenLine, Shield, Globe, BookOpen, ArrowRight, Mail,
 } from 'lucide-react';
+import { useEditorsStore } from '@/lib/stores/editors.store';
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 export default function AboutPage() {
+  const { editors } = useEditorsStore();
+
   return (
     <>
       {/* ── 1. HERO — Our Mission ──────────────────────────────────────────── */}
@@ -107,22 +110,16 @@ export default function AboutPage() {
               publishers dedicated to the pursuit of excellence.
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { role: 'EDITOR-IN-CHIEF',      name: 'Dr. Eleanor Vance',     credential: 'D.Phil, Oxford University' },
-              { role: 'MANAGING DIRECTOR',    name: 'Julian Thorne',         credential: 'Master of Publishing Studies' },
-              { role: 'GLOBAL RESEARCH LEAD', name: 'Dr. Saffron Li',        credential: 'PhD in Theoretical Physics' },
-              { role: 'ETHICS COMMISSIONER',  name: 'Marcus Aurelius Singh', credential: 'Professor Emeritus of Jurisprudence' },
-            ].map(({ role, name, credential }) => (
-              <div key={name} className="flex flex-col gap-3">
-                {/* Photo placeholder — replace with real headshots in production */}
-                <div className="w-full aspect-[3/4] rounded-2xl bg-sand/30 border border-sand/40 flex items-center justify-center">
-                  <PenLine className="h-8 w-8 text-sand" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {editors.map(ed => (
+              <div key={ed.id} className="flex flex-col gap-3 rounded-2xl border border-sand/40 bg-white p-5 shadow-card hover:shadow-lg transition-all">
+                <div className="w-full aspect-[4/3] rounded-xl bg-ochre/10 border border-sand/30 flex items-center justify-center text-ochre">
+                  <PenLine className="h-8 w-8" />
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs font-bold uppercase tracking-widest text-ochre">{role}</span>
-                  <h3 className="font-display text-base font-bold text-forest-green leading-snug">{name}</h3>
-                  <p className="text-xs text-forest-green/50">{credential}</p>
+                <div className="flex flex-col gap-1 mt-1">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-ochre">{ed.role}</span>
+                  <h3 className="font-display text-base font-bold text-forest-green leading-snug">{ed.name}</h3>
+                  <p className="text-xs text-forest-green/50">{ed.institution}</p>
                 </div>
               </div>
             ))}

@@ -38,7 +38,7 @@ export default function HomePage() {
               className="inline-flex items-center gap-2 rounded-full bg-ochre px-7 py-3 text-sm font-semibold text-ivory hover:bg-ochre/90 transition-colors">
               Browse Books <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/publication-fee"
+            <Link href="/register?role=author"
               className="inline-flex items-center gap-2 rounded-full border border-forest-green/40 bg-transparent px-7 py-3 text-sm font-semibold text-forest-green hover:border-forest-green transition-colors">
               Publish With Us <ArrowRight className="h-4 w-4" />
             </Link>

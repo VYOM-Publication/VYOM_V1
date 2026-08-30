@@ -97,9 +97,7 @@ export default function RoleLoginPage() {
     setError('');
     setLoading(true);
     try {
-      // For member/author we honour the role the user clicked.
-      // For 'editor' card (covers editor/reviewer/admin) let highest role win.
-      const hint = role === 'member' || role === 'author' ? role : undefined;
+      const hint = role;
       await login({ email, password }, hint);
       // useAuth.login() redirects to the correct dashboard automatically.
     } catch (err: unknown) {
@@ -138,8 +136,10 @@ export default function RoleLoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold uppercase tracking-widest text-forest-green">Email</label>
+            <label htmlFor="role-login-email" className="text-xs font-bold uppercase tracking-widest text-forest-green">Email</label>
             <input
+              id="role-login-email"
+              name="email"
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
@@ -151,9 +151,11 @@ export default function RoleLoginPage() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-bold uppercase tracking-widest text-forest-green">Password</label>
+            <label htmlFor="role-login-password" className="text-xs font-bold uppercase tracking-widest text-forest-green">Password</label>
             <div className="relative">
               <input
+                id="role-login-password"
+                name="password"
                 type={showPw ? 'text' : 'password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}

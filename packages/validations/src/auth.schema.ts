@@ -18,6 +18,13 @@ export const registerSchema = z
       .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
     confirmPassword: z.string().min(1, 'Please confirm your password'),
     role: z.string().optional(),
+    specialization: z.string().max(100).optional(),
+    designation: z.string().max(100).optional(),
+    affiliation: z.string().max(200).optional(),
+    orcid: z.string().max(50).optional(),
+    phone: z.string().max(30).optional(),
+    country: z.string().max(100).optional(),
+    bio: z.string().max(1000).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
