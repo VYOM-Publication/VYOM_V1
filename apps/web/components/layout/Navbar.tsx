@@ -49,7 +49,7 @@ export default function Navbar() {
 
   // Normalised session shape used throughout the navbar JSX below
   const session = isAuthenticated && user && role
-    ? { name: user.fullName, role, dashboard: `/${role}/dashboard` }
+    ? { name: user.fullName, role, dashboard: `/${role}/dashboard`, avatarUrl: user.avatarUrl }
     : null;
 
   useEffect(() => { setOpen(false); }, [pathname]);
@@ -115,7 +115,21 @@ export default function Navbar() {
             );
           })}
 
-          {/* Author Publications Dropdown */}
+          {/* Console Pills for logged-in users according to their actual role */}
+          {session && session.role === 'member' && (
+            <li>
+              <Link
+                href="/member/dashboard"
+                className={`text-xs font-bold tracking-widest transition-colors whitespace-nowrap px-3 py-1.5 rounded-full bg-ochre/15 border border-ochre/30 text-ochre hover:bg-ochre hover:text-ivory ${
+                  isActive('/member/dashboard') ? 'bg-ochre text-ivory' : ''
+                }`}
+              >
+                MY LIBRARY
+              </Link>
+            </li>
+          )}
+
+
           {session && session.role === 'author' && (
             <li className="relative" ref={authorMenuRef}>
               <button
@@ -232,6 +246,18 @@ export default function Navbar() {
               )}
             </li>
           )}
+
+          {/* Admin Dropdown */}
+          {session && session.role === 'admin' && (
+            <li className="relative">
+              <Link
+                href="/admin/dashboard"
+                className="flex items-center gap-1 text-xs font-bold tracking-widest text-ochre hover:text-ochre/80 transition-colors uppercase whitespace-nowrap px-3 py-1.5 rounded-full bg-ochre/10 border border-ochre/20"
+              >
+                Admin Console →
+              </Link>
+            </li>
+          )}
         </ul>
 
         {/* Desktop right-side controls */}
@@ -248,7 +274,7 @@ export default function Navbar() {
                 className="rounded-full border border-forest-green/40 px-5 py-2 text-sm font-semibold text-forest-green hover:border-forest-green hover:bg-forest-green/5 transition-colors">
                 Login
               </Link>
-              <Link href="/join"
+              <Link href="/register?role=author"
                 className="rounded-full bg-ochre px-5 py-2 text-sm font-semibold text-ivory hover:bg-ochre/90 transition-colors">
                 Join VYOM
               </Link>
@@ -380,7 +406,7 @@ export default function Navbar() {
                   className="w-full text-center rounded-full border border-forest-green/40 px-5 py-3 text-sm font-semibold text-forest-green hover:bg-forest-green/5 transition-colors">
                   Login
                 </Link>
-                <Link href="/join" onClick={() => setOpen(false)}
+                <Link href="/register?role=author" onClick={() => setOpen(false)}
                   className="w-full text-center rounded-full bg-ochre px-5 py-3 text-sm font-semibold text-ivory hover:bg-ochre/90 transition-colors">
                   Join VYOM
                 </Link>

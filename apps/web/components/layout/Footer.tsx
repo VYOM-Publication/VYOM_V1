@@ -14,8 +14,8 @@ const COLUMNS = [
     heading: 'Authors',
     links: [
       { label: 'Submission Guidelines', href: '/guidelines' },
-      { label: 'Publication Fee',       href: '/publication-fee' },
       { label: 'Publish With Us',       href: '/register?role=author' },
+      { label: 'Author Registration',   href: '/register?role=author' },
       { label: 'Author Dashboard',      href: '/author/dashboard' },
     ],
   },

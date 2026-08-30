@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
 import { DEMO_REVIEW_ASSIGNMENTS } from '@/lib/demo-data';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -8,6 +9,23 @@ import { ReviewPipeline } from '@/components/reviewer/ReviewPipeline';
 import { ClipboardList, ArrowRight, Download, Clock, AlertTriangle } from 'lucide-react';
 
 export default function ReviewerAssignmentsPage() {
+  const { submissions } = useSubmissionsStore();
+  const storeAssigned = submissions
+    .filter(s => s.assignedReviewers && s.assignedReviewers.length > 0)
+    .map(s => ({
+      id: `rev_asg_${s.id}`,
+      submissionId: s.id,
+      title: s.title,
+      journal: s.journal,
+      author: s.author,
+      assignedDate: s.submittedDate,
+      dueDate: '2026-09-20',
+      daysLeft: 14,
+      status: s.status === 'UNDER REVIEW' ? 'IN PROGRESS' : s.status,
+      abstract: s.abstract,
+    }));
+
+  const activeAssignments = [...storeAssigned, ...DEMO_REVIEW_ASSIGNMENTS];
   return (
     <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-10">
       {/* Header */}
@@ -20,7 +38,7 @@ export default function ReviewerAssignmentsPage() {
 
       {/* Assignments List */}
       <div className="space-y-6">
-        {DEMO_REVIEW_ASSIGNMENTS.length === 0 ? (
+        {activeAssignments.length === 0 ? (
           <EmptyState
             icon={ClipboardList}
             title="No active review assignments."
@@ -28,7 +46,7 @@ export default function ReviewerAssignmentsPage() {
           />
         ) : (
           <div className="flex flex-col gap-6">
-            {DEMO_REVIEW_ASSIGNMENTS.map(a => {
+            {activeAssignments.map(a => {
               const isUrgent = a.daysLeft <= 7;
 
               return (

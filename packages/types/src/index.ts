@@ -7,6 +7,14 @@ export interface User {
   status: UserStatus;
   emailVerified: boolean;
   roles: Role[];
+  avatarUrl?: string;
+  specialization?: string;
+  designation?: string;
+  affiliation?: string;
+  orcid?: string;
+  phone?: string;
+  country?: string;
+  bio?: string;
   createdAt: string;
   updatedAt: string;
 }

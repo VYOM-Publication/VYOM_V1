@@ -24,7 +24,7 @@ const POSTS: Record<string, {
   },
   '2': {
     id: '2', title: 'How to Write an Abstract That Gets Accepted', date: 'May 22, 2025',
-    author: 'Helena Thorne', authorRole: 'Senior Commissioning Editor', category: 'Author Tips',
+    author: 'Saee S Sutar', authorRole: 'Sub-Editor, VYOM Vichar', category: 'Author Tips',
     readTime: '5 min read',
     body: [
       'Your abstract is the single most important paragraph in your manuscript. Before a reviewer commits to reading your work, before an editor considers your submission, they read the abstract. It is your first — and sometimes only — opportunity to make your case.',

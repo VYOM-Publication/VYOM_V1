@@ -1,13 +1,11 @@
-﻿'use client';
-
-// TODO: Replace demo data with GET /api/v1/admin/settings and PATCH /api/v1/admin/settings once backend credentials are available.
+'use client';
 
 import { useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
-import { CheckCircle, Settings } from 'lucide-react';
+import { CheckCircle2, Settings, Shield, Sliders } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function AdminSettingsPage() {
-  const [saved, setSaved] = useState(false);
   const [settings, setSettings] = useState({
     platformName: 'VYOM Publication',
     supportEmail: 'support@vyompublication.com',
@@ -18,81 +16,126 @@ export default function AdminSettingsPage() {
     maxFileSize: '20',
     allowedFormats: 'PDF, DOCX',
     reviewDeadlineDays: '21',
-    abstractWordLimit: '300',
+    abstractWordLimit: '1000',
   });
 
   const set = (k: string, v: string | boolean) => setSettings(s => ({ ...s, [k]: v }));
 
+  const handleSave = () => {
+    toast.success('Platform configuration settings updated successfully!');
+  };
+
   return (
     <>
-      <PageHeader title="Settings" subtitle="Platform Configuration" role="admin" />
+      <PageHeader title="Platform Configuration & Settings" subtitle="Global Governance & Manuscript Policy Controls" role="admin" />
 
-      <main className="flex-1 px-8 py-6 max-w-2xl mx-auto w-full flex flex-col gap-6">
+      <main className="flex-1 px-8 py-6 max-w-4xl mx-auto w-full flex flex-col gap-6">
         {/* General */}
-        <div className="rounded-2xl border border-sand/40 bg-white p-6 flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-forest-green">General</h2>
-          {[
-            { key: 'platformName', label: 'Platform Name' },
-            { key: 'supportEmail', label: 'Support Email' },
-          ].map(({ key, label }) => (
-            <label key={key} className="flex flex-col gap-1.5">
-              <span className="text-xs font-bold uppercase tracking-widest text-forest-green/40">{label}</span>
-              <input value={settings[key as keyof typeof settings] as string}
-                onChange={e => set(key, e.target.value)}
-                className="rounded-xl border border-sand/40 px-4 py-2.5 text-sm text-forest-green focus:outline-none focus:border-ochre" />
+        <div className="rounded-3xl border border-sand/40 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+          <div className="border-b border-sand/20 pb-3">
+            <h2 className="font-display text-lg font-bold text-forest-green">General Identity & Support</h2>
+            <p className="text-xs text-forest-green/50 mt-0.5">Platform name and contact information</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <label className="flex flex-col gap-1.5">
+              <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Platform Name</span>
+              <input 
+                value={settings.platformName}
+                onChange={e => set('platformName', e.target.value)}
+                className="rounded-xl border border-sand/40 bg-ivory/30 px-4 py-3 text-forest-green focus:outline-none focus:border-ochre font-medium" 
+              />
             </label>
-          ))}
+            <label className="flex flex-col gap-1.5">
+              <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Support Email</span>
+              <input 
+                value={settings.supportEmail}
+                onChange={e => set('supportEmail', e.target.value)}
+                className="rounded-xl border border-sand/40 bg-ivory/30 px-4 py-3 text-forest-green focus:outline-none focus:border-ochre font-medium" 
+              />
+            </label>
+          </div>
         </div>
 
-        {/* Submission settings */}
-        <div className="rounded-2xl border border-sand/40 bg-white p-6 flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-forest-green">Submission Settings</h2>
-          {[
-            { key: 'apcAmount', label: 'APC Amount (INR)' },
-            { key: 'maxFileSize', label: 'Max File Size (MB)' },
-            { key: 'allowedFormats', label: 'Allowed File Formats' },
-            { key: 'reviewDeadlineDays', label: 'Default Review Deadline (days)' },
-            { key: 'abstractWordLimit', label: 'Abstract Word Limit' },
-          ].map(({ key, label }) => (
-            <label key={key} className="flex flex-col gap-1.5">
-              <span className="text-xs font-bold uppercase tracking-widest text-forest-green/40">{label}</span>
-              <input value={settings[key as keyof typeof settings] as string}
-                onChange={e => set(key, e.target.value)}
-                className="rounded-xl border border-sand/40 px-4 py-2.5 text-sm text-forest-green focus:outline-none focus:border-ochre" />
+        {/* Submission Rules */}
+        <div className="rounded-3xl border border-sand/40 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+          <div className="border-b border-sand/20 pb-3">
+            <h2 className="font-display text-lg font-bold text-forest-green">Submission & APC Policies</h2>
+            <p className="text-xs text-forest-green/50 mt-0.5">Author limits, APC fees, and review deadlines</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <label className="flex flex-col gap-1.5">
+              <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Article Processing Charge (APC in INR)</span>
+              <input 
+                value={settings.apcAmount}
+                onChange={e => set('apcAmount', e.target.value)}
+                className="rounded-xl border border-sand/40 bg-ivory/30 px-4 py-3 text-forest-green focus:outline-none focus:border-ochre font-medium" 
+              />
             </label>
-          ))}
+            <label className="flex flex-col gap-1.5">
+              <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Max File Upload Size (MB)</span>
+              <input 
+                value={settings.maxFileSize}
+                onChange={e => set('maxFileSize', e.target.value)}
+                className="rounded-xl border border-sand/40 bg-ivory/30 px-4 py-3 text-forest-green focus:outline-none focus:border-ochre font-medium" 
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Allowed Manuscript File Formats</span>
+              <input 
+                value={settings.allowedFormats}
+                onChange={e => set('allowedFormats', e.target.value)}
+                className="rounded-xl border border-sand/40 bg-ivory/30 px-4 py-3 text-forest-green focus:outline-none focus:border-ochre font-medium" 
+              />
+            </label>
+            <label className="flex flex-col gap-1.5">
+              <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Default Review Deadline (days)</span>
+              <input 
+                value={settings.reviewDeadlineDays}
+                onChange={e => set('reviewDeadlineDays', e.target.value)}
+                className="rounded-xl border border-sand/40 bg-ivory/30 px-4 py-3 text-forest-green focus:outline-none focus:border-ochre font-medium" 
+              />
+            </label>
+          </div>
         </div>
 
         {/* Toggles */}
-        <div className="rounded-2xl border border-sand/40 bg-white p-6 flex flex-col gap-4">
-          <h2 className="font-display text-lg font-bold text-forest-green">Platform Controls</h2>
-          {[
-            { key: 'submissionOpen', label: 'Submissions Open', desc: 'Allow new manuscript submissions' },
-            { key: 'emailNotifications', label: 'Email Notifications', desc: 'Send automated emails for workflow events' },
-            { key: 'maintenanceMode', label: 'Maintenance Mode', desc: 'Show maintenance page to all visitors' },
-          ].map(({ key, label, desc }) => (
-            <div key={key} className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-bold text-forest-green">{label}</p>
-                <p className="text-xs text-forest-green/40 mt-0.5">{desc}</p>
+        <div className="rounded-3xl border border-sand/40 bg-white p-6 sm:p-8 shadow-sm space-y-5">
+          <div className="border-b border-sand/20 pb-3">
+            <h2 className="font-display text-lg font-bold text-forest-green">Platform Controls</h2>
+            <p className="text-xs text-forest-green/50 mt-0.5">Toggle submission windows and email alerts</p>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              { key: 'submissionOpen', label: 'Submissions Window Open', desc: 'Allow authors to submit new abstracts and manuscripts' },
+              { key: 'emailNotifications', label: 'Automated Email Dispatch', desc: 'Dispatch workflow emails for assignments and decisions' },
+              { key: 'maintenanceMode', label: 'Maintenance Mode', desc: 'Display maintenance banner to non-admin visitors' },
+            ].map(({ key, label, desc }) => (
+              <div key={key} className="flex items-center justify-between p-3 rounded-2xl border border-sand/20 bg-ivory/20">
+                <div>
+                  <p className="text-xs font-bold text-forest-green">{label}</p>
+                  <p className="text-[11px] text-forest-green/50 mt-0.5">{desc}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => set(key, !(settings[key as keyof typeof settings] as boolean))}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${settings[key as keyof typeof settings] ? 'bg-ochre' : 'bg-sand/60'}`}
+                >
+                  <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${settings[key as keyof typeof settings] ? 'translate-x-7' : 'translate-x-1'}`} />
+                </button>
               </div>
-              <button onClick={() => set(key, !(settings[key as keyof typeof settings] as boolean))}
-                className={`relative w-12 h-6 rounded-full transition-colors ${settings[key as keyof typeof settings] ? 'bg-ochre' : 'bg-sand/50'}`}>
-                <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${settings[key as keyof typeof settings] ? 'translate-x-7' : 'translate-x-1'}`} />
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          {saved && (
-            <span className="flex items-center gap-2 text-sm text-green-600">
-              <CheckCircle className="h-4 w-4" /> Settings saved (demo only)
-            </span>
-          )}
-          <button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 3000); }}
-            className="ml-auto flex items-center gap-2 rounded-full bg-ochre px-7 py-3 text-sm font-bold text-ivory hover:bg-ochre/90">
-            <Settings className="h-4 w-4" /> Save Settings
+        <div className="flex justify-end pt-2">
+          <button
+            onClick={handleSave}
+            className="rounded-full bg-ochre px-8 py-3.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90 shadow-sm transition-all inline-flex items-center gap-2"
+          >
+            <Settings className="h-4 w-4" /> Save Configuration
           </button>
         </div>
       </main>

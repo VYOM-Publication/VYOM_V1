@@ -9,6 +9,14 @@ export interface IUser extends Document {
   status: UserStatus;
   emailVerified: boolean;
   roles: Role[];
+  avatarUrl?: string;
+  specialization?: string;
+  designation?: string;
+  affiliation?: string;
+  orcid?: string;
+  phone?: string;
+  country?: string;
+  bio?: string;
   emailVerificationToken?: string;
   emailVerificationTokenExpiry?: Date;
   passwordResetToken?: string;
@@ -44,6 +52,14 @@ const userSchema = new Schema<IUser>(
       enum: Object.values(Role),
       default: [Role.MEMBER],
     },
+    avatarUrl: { type: String, trim: true },
+    specialization: { type: String, trim: true },
+    designation: { type: String, trim: true },
+    affiliation: { type: String, trim: true },
+    orcid: { type: String, trim: true },
+    phone: { type: String, trim: true },
+    country: { type: String, trim: true },
+    bio: { type: String, trim: true },
     emailVerificationToken: { type: String, select: false },
     emailVerificationTokenExpiry: { type: Date, select: false },
     passwordResetToken: { type: String, select: false, index: true },

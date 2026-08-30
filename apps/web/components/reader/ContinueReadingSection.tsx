@@ -46,7 +46,7 @@ export function ContinueReadingSection({ book }: ContinueReadingSectionProps) {
   const colorScheme = colors[parseInt(book.bookId) % colors.length] || colors[0];
 
   return (
-    <div className="group rounded-3xl border border-sand/40 bg-white shadow-card hover:shadow-card-hover hover:border-sand transition-all p-6 sm:p-8 mb-8">
+    <div className="group rounded-3xl border border-sand/30 border-l-4 border-l-ochre bg-gradient-to-br from-white via-white to-ivory/50 shadow-card hover:shadow-lg hover:border-sand transition-all p-6 sm:p-8 mb-8">
       <span className="text-[10px] font-bold uppercase tracking-widest text-ochre mb-4 block">
         Continue Reading
       </span>
@@ -95,8 +95,8 @@ export function ContinueReadingSection({ book }: ContinueReadingSectionProps) {
 
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <Link
-              href={`/books/${book.bookId}`}
-              className="rounded-full bg-ochre px-6 py-3 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90 transition-colors inline-flex items-center justify-center gap-2"
+              href={`/member/read/${book.bookId}`}
+              className="rounded-full bg-ochre px-6 py-3 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90 transition-colors inline-flex items-center justify-center gap-2 shadow-sm"
             >
               Continue Reading <ArrowRight className="h-4 w-4" />
             </Link>

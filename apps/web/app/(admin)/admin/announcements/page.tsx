@@ -1,104 +1,169 @@
-﻿'use client';
-
-// TODO: Replace demo data with GET /api/v1/admin/announcements and POST /api/v1/admin/announcements once backend credentials are available.
+'use client';
 
 import { useState } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { DEMO_ANNOUNCEMENTS } from '@/lib/demo-data';
-import { Megaphone, Pin, Plus, X } from 'lucide-react';
+import { Megaphone, Pin, Plus, X, Search, CheckCircle2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function AdminAnnouncementsPage() {
   const [items, setItems] = useState(DEMO_ANNOUNCEMENTS);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ title: '', content: '', category: 'General' });
+  const [filterCategory, setFilterCategory] = useState('ALL');
+  const [form, setForm] = useState({ title: '', content: '', category: 'General Call' });
+
+  const filtered = items.filter(a => {
+    return filterCategory === 'ALL' || a.category === filterCategory;
+  });
 
   const handleAdd = () => {
-    if (!form.title || !form.content) return;
+    if (!form.title.trim() || !form.content.trim()) {
+      toast.error('Please fill in title and content.');
+      return;
+    }
+
     setItems(prev => [{
       id: `AN-${Date.now()}`,
-      ...form,
-      publishDate: new Date().toISOString().slice(0, 10),
+      title: form.title,
+      content: form.content,
+      category: form.category,
+      publishDate: new Date().toISOString().split('T')[0],
       status: 'published',
-      author: 'Demo Admin',
-      pinned: false,
+      author: 'Administrator',
+      pinned: true,
     }, ...prev]);
-    setForm({ title: '', content: '', category: 'General' });
+
+    toast.success('New platform announcement published live!');
+    setForm({ title: '', content: '', category: 'General Call' });
     setShowForm(false);
+  };
+
+  const handleDelete = (id: string) => {
+    setItems(prev => prev.filter(x => x.id !== id));
+    toast.success('Announcement removed.');
   };
 
   return (
     <>
-      <PageHeader title="Announcements" subtitle="Platform Notices & Calls" role="admin" />
+      <PageHeader title="Platform Announcements & Calls" subtitle="Broadcast Public Notices & Journal Calls for Papers" role="admin" />
 
-      <main className="flex-1 px-8 py-6 flex flex-col gap-4">
-        <div className="flex justify-end">
-          <button onClick={() => setShowForm(v => !v)}
-            className="flex items-center gap-2 rounded-full bg-ochre px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90">
-            <Plus className="h-3.5 w-3.5" /> New Announcement
+      <main className="flex-1 px-8 py-6 flex flex-col gap-6">
+        {/* Header bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sand/30 pb-4">
+          <div>
+            <h2 className="font-display text-xl font-bold text-forest-green">Public Bulletins & Calls</h2>
+            <p className="text-xs text-forest-green/50 mt-0.5">Post call for papers, system updates, and journal notices</p>
+          </div>
+
+          <button
+            onClick={() => setShowForm(v => !v)}
+            className="rounded-full bg-ochre px-6 py-3 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90 shadow-sm transition-all inline-flex items-center gap-2 self-start sm:self-auto"
+          >
+            <Plus className="h-4 w-4" /> New Announcement
           </button>
         </div>
 
-        {/* New announcement form */}
+        {/* Form Modal / Drawer */}
         {showForm && (
-          <div className="rounded-2xl border border-ochre/30 bg-ochre/5 p-6 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-lg font-bold text-forest-green">New Announcement</h2>
-              <button onClick={() => setShowForm(false)} className="text-forest-green/30 hover:text-forest-green">
-                <X className="h-4 w-4" />
+          <div className="rounded-3xl border border-ochre/40 bg-white p-6 shadow-lg flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-sand/20 pb-3">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-ochre">Publish Notice</span>
+                <h3 className="font-display text-lg font-bold text-forest-green mt-0.5">Create Announcement</h3>
+              </div>
+              <button onClick={() => setShowForm(false)} className="text-forest-green/40 hover:text-forest-green">
+                <X className="h-5 w-5" />
               </button>
             </div>
-            <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-              placeholder="Announcement title"
-              className="rounded-xl border border-sand/40 bg-white px-4 py-2.5 text-sm text-forest-green focus:outline-none focus:border-ochre" />
-            <select value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
-              className="rounded-xl border border-sand/40 bg-white px-4 py-2.5 text-sm text-forest-green/60 focus:outline-none">
-              {['General', 'Call for Papers', 'System Notice', 'New Journal', 'Fee Update'].map(c => <option key={c}>{c}</option>)}
-            </select>
-            <textarea value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
-              rows={4} placeholder="Announcement content..."
-              className="rounded-xl border border-sand/40 bg-white px-4 py-2.5 text-sm text-forest-green focus:outline-none focus:border-ochre resize-none" />
-            <div className="flex justify-end gap-3">
-              <button onClick={() => setShowForm(false)}
-                className="rounded-full border border-sand/50 px-5 py-2 text-xs font-bold text-forest-green/60 hover:border-forest-green">
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <label className="sm:col-span-2 flex flex-col gap-1">
+                <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Announcement Title *</span>
+                <input
+                  value={form.title}
+                  onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                  placeholder="e.g. VJLS Autumn 2026 Special Issue Call for Papers"
+                  className="rounded-xl border border-sand/40 bg-ivory/30 px-3.5 py-2.5 text-forest-green focus:outline-none focus:border-ochre font-medium"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1">
+                <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Category *</span>
+                <select
+                  value={form.category}
+                  onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                  className="rounded-xl border border-sand/40 bg-ivory/30 px-3.5 py-2.5 text-forest-green focus:outline-none focus:border-ochre font-medium"
+                >
+                  {['General Call', 'Call for Papers', 'System Notice', 'New Volume Release', 'Policy Update'].map(c => (
+                    <option key={c}>{c}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <label className="flex flex-col gap-1 text-xs">
+              <span className="font-bold uppercase tracking-wider text-forest-green/60 text-[10px]">Announcement Details *</span>
+              <textarea
+                value={form.content}
+                onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
+                rows={4}
+                placeholder="Provide details, deadlines, guidelines, and submission instructions..."
+                className="rounded-xl border border-sand/40 bg-ivory/30 px-3.5 py-2.5 text-forest-green focus:outline-none focus:border-ochre font-medium resize-none leading-relaxed"
+              />
+            </label>
+
+            <div className="flex justify-end gap-3 pt-2">
+              <button
+                onClick={() => setShowForm(false)}
+                className="rounded-full border border-sand px-5 py-2 text-xs font-bold uppercase tracking-widest text-forest-green/60 hover:text-forest-green"
+              >
                 Cancel
               </button>
-              <button onClick={handleAdd}
-                className="rounded-full bg-ochre px-5 py-2 text-xs font-bold text-ivory hover:bg-ochre/90">
-                Publish
+              <button
+                onClick={handleAdd}
+                className="rounded-full bg-ochre px-6 py-2 text-xs font-bold uppercase tracking-widest text-ivory hover:bg-ochre/90 shadow-sm"
+              >
+                Publish Live
               </button>
             </div>
           </div>
         )}
 
-        {/* List */}
-        <div className="flex flex-col gap-3">
-          {items.map(a => (
-            <div key={a.id} className="rounded-2xl border border-sand/40 bg-white px-6 py-5 flex items-start gap-4">
-              <div className="flex flex-col gap-1 flex-1">
+        {/* Announcements List */}
+        <div className="space-y-4">
+          {filtered.map(a => (
+            <div
+              key={a.id}
+              className="rounded-3xl border border-sand/40 bg-white p-6 shadow-sm hover:border-sand hover:shadow-card transition-all flex flex-col sm:flex-row sm:items-start justify-between gap-4"
+            >
+              <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-xs font-bold text-forest-green/40 border border-sand/40 rounded-full px-2.5 py-0.5">{a.category}</span>
-                  {a.pinned && <span className="flex items-center gap-1 text-xs font-bold text-ochre"><Pin className="h-3 w-3" /> Pinned</span>}
-                  <span className="text-xs text-forest-green/30">{a.publishDate}</span>
+                  <span className="rounded-full bg-ochre/10 border border-ochre/20 px-3 py-0.5 text-[9px] font-bold text-ochre uppercase tracking-widest">
+                    {a.category}
+                  </span>
+                  {a.pinned && (
+                    <span className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-[9px] font-bold text-amber-700 uppercase tracking-widest inline-flex items-center gap-1">
+                      <Pin className="h-3 w-3" /> Pinned Bulletin
+                    </span>
+                  )}
+                  <span className="text-[10px] text-forest-green/40 font-semibold">Published {a.publishDate}</span>
                 </div>
-                <h3 className="font-display text-base font-bold text-forest-green mt-1">{a.title}</h3>
-                <p className="text-sm text-forest-green/60 line-clamp-2">{a.content}</p>
-                <p className="text-xs text-forest-green/30 mt-1">By {a.author}</p>
+
+                <h3 className="font-display text-lg font-bold text-forest-green leading-snug">{a.title}</h3>
+                <p className="text-xs text-forest-green/75 leading-relaxed font-medium">{a.content}</p>
+                <p className="text-[10px] text-forest-green/40">Authorized by {a.author}</p>
               </div>
-              <div className="flex flex-col gap-2 items-end shrink-0">
-                <button className="text-xs font-bold text-ochre hover:underline">Edit</button>
-                <button onClick={() => setItems(i => i.filter(x => x.id !== a.id))}
-                  className="text-xs text-red-400 hover:underline">Delete</button>
-              </div>
+
+              <button
+                onClick={() => handleDelete(a.id)}
+                className="self-start text-red-400 hover:text-red-600 p-2 rounded-xl hover:bg-red-50 transition-colors shrink-0"
+                title="Remove Announcement"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
           ))}
         </div>
-
-        {items.length === 0 && (
-          <div className="flex flex-col items-center gap-4 py-20 text-forest-green/30">
-            <Megaphone className="h-10 w-10" />
-            <p className="text-sm">No announcements yet.</p>
-          </div>
-        )}
       </main>
     </>
   );

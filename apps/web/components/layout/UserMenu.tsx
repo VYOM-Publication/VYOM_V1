@@ -9,6 +9,7 @@ interface NavSession {
   name: string;
   role: string;
   dashboard: string;
+  avatarUrl?: string;
 }
 
 interface UserMenuProps {
@@ -44,9 +45,18 @@ export default function UserMenu({ session }: UserMenuProps) {
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <div className="h-8 w-8 rounded-full bg-ochre/15 text-ochre flex items-center justify-center font-bold text-xs select-none shadow-sm">
-          {session.name.substring(0, 2).toUpperCase()}
-        </div>
+        {session.avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={session.avatarUrl}
+            alt={session.name}
+            className="h-8 w-8 rounded-full object-cover border border-sand/40 shadow-sm"
+          />
+        ) : (
+          <div className="h-8 w-8 rounded-full bg-ochre/15 text-ochre flex items-center justify-center font-bold text-xs select-none shadow-sm">
+            {session.name.substring(0, 2).toUpperCase()}
+          </div>
+        )}
         <span className="hidden sm:inline text-xs font-bold text-forest-green/80">
           {session.name}
         </span>

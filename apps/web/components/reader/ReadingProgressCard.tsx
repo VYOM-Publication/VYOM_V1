@@ -17,7 +17,7 @@ interface ReadingProgressCardProps {
 
 export function ReadingProgressCard({ book }: ReadingProgressCardProps) {
   return (
-    <div className="rounded-2xl border border-sand/40 bg-white p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-sand hover:shadow-card transition-all">
+    <div className="rounded-3xl border border-sand/30 border-l-4 border-l-ochre bg-gradient-to-br from-white via-white to-ivory/50 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-card hover:shadow-lg transition-all">
       <div className="flex items-center gap-4 flex-1 min-w-0">
         <div className="h-10 w-10 rounded-xl bg-ochre/15 flex items-center justify-center text-ochre shrink-0">
           <BookOpen className="h-5 w-5" />
@@ -34,10 +34,10 @@ export function ReadingProgressCard({ book }: ReadingProgressCardProps) {
         </div>
       </div>
       <Link
-        href={`/books/${book.bookId}`}
-        className="shrink-0 rounded-full border border-ochre/40 px-5 py-2 text-xs font-bold text-ochre hover:bg-ochre hover:text-ivory transition-colors text-center inline-flex items-center justify-center gap-1"
+        href={`/member/read/${book.bookId}`}
+        className="shrink-0 rounded-full bg-ochre px-5 py-2 text-xs font-bold uppercase tracking-wider text-ivory hover:bg-ochre/90 shadow-xs transition-colors text-center inline-flex items-center justify-center gap-1"
       >
-        Continue <ArrowRight className="h-3 w-3" />
+        Continue Reading <ArrowRight className="h-3 w-3" />
       </Link>
     </div>
   );

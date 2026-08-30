@@ -8,6 +8,8 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { DEMO_SUBMISSIONS } from '@/lib/demo-data';
 import { ArrowLeft, CheckCircle, CreditCard, Smartphone, Building2, ShieldCheck } from 'lucide-react';
 
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
+
 const PAYMENT_METHODS = [
   { id: 'upi',     label: 'UPI',         icon: Smartphone,  desc: 'Pay via any UPI app (GPay, PhonePe, Paytm)' },
   { id: 'card',    label: 'Card',        icon: CreditCard,  desc: 'Credit or debit card (Visa, Mastercard, RuPay)' },
@@ -16,23 +18,30 @@ const PAYMENT_METHODS = [
 
 export default function PaymentPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const submission = DEMO_SUBMISSIONS.find(s => s.id === id) ?? DEMO_SUBMISSIONS[2]; // default to ACCEPTED one
+  const { submissions } = useSubmissionsStore();
+  const submission = submissions.find(s => s.id === id) ?? submissions[0];
 
   const [method, setMethod]   = useState('upi');
-  const [upiId, setUpiId]     = useState('');
+  const [upiId, setUpiId]     = useState('author@upi');
   const [paid, setPaid]       = useState(false);
   const [loading, setLoading] = useState(false);
 
   const APC = 8500;
 
   function handlePay() {
-    if (!upiId && method === 'upi') return;
     setLoading(true);
-    // Simulate payment gateway delay
+    // Simulate payment gateway delay & update real-time store
     setTimeout(() => {
+      if (submission) {
+        useSubmissionsStore.setState(state => ({
+          submissions: state.submissions.map(sub => 
+            sub.id === submission.id ? { ...sub, paymentStatus: 'paid' as const } : sub
+          )
+        }));
+      }
       setLoading(false);
       setPaid(true);
-    }, 1800);
+    }, 1200);
   }
 
   if (paid) {

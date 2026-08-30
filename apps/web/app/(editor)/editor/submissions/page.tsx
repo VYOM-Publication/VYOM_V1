@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { DEMO_SUBMISSIONS } from '@/lib/demo-data';
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { EditorialPipeline } from '@/components/editor/EditorialPipeline';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -14,11 +14,15 @@ import {
 } from 'lucide-react';
 
 export default function EditorSubmissionsPage() {
+  const { submissions } = useSubmissionsStore();
   const [filterJournal, setFilterJournal] = useState('ALL');
   const [filterStatus, setFilterStatus] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredSubmissions = DEMO_SUBMISSIONS.filter(s => {
+  const filteredSubmissions = submissions.filter(s => {
+    // 1. Editors ONLY see manuscripts that have been assigned by Admin (not raw SUBMITTED_TO_ADMIN)
+    if (s.status === 'SUBMITTED_TO_ADMIN' || !s.assignedEditorName) return false;
+
     const matchJournal = filterJournal === 'ALL' || s.journal === filterJournal;
     const matchStatus = filterStatus === 'ALL' || s.status === filterStatus;
     const matchSearch = !searchQuery.trim() || 

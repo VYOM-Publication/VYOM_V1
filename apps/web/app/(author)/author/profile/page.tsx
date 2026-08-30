@@ -11,16 +11,34 @@ import {
 import { StatusBadge } from '@/components/common/StatusBadge';
 
 export default function AuthorProfilePage() {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const [form, setForm] = useState({
     ...DEMO_AUTHOR_PROFILE,
     fullName: user?.fullName ?? DEMO_AUTHOR_PROFILE.fullName,
     email: user?.email ?? DEMO_AUTHOR_PROFILE.email,
   });
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatarUrl ?? null);
   const [saved, setSaved] = useState(false);
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
+  function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const url = ev.target?.result as string;
+      setAvatarPreview(url);
+      if (user) {
+        setUser({ ...user, avatarUrl: url }, typeof window !== 'undefined' ? (window.__VYOM_ACCESS_TOKEN__ ?? '') : '');
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
   const handleSave = () => {
+    if (user && avatarPreview) {
+      setUser({ ...user, avatarUrl: avatarPreview }, typeof window !== 'undefined' ? (window.__VYOM_ACCESS_TOKEN__ ?? '') : '');
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -38,11 +56,32 @@ export default function AuthorProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Left Side: Academic Bio Overview Card */}
         <div className="space-y-6">
-          <div className="rounded-3xl border border-sand/40 bg-white p-6 shadow-sm flex flex-col items-center text-center">
-            {/* Initials Avatar */}
-            <div className="h-20 w-20 rounded-full bg-ochre/15 text-ochre flex items-center justify-center font-bold text-2xl shadow-sm border border-sand/30">
-              {form.fullName.substring(0, 2).toUpperCase()}
+          <div className="rounded-3xl border border-sand/40 bg-white p-6 shadow-card flex flex-col items-center text-center">
+            {/* Avatar Profile Picture Uploader */}
+            <div className="relative group cursor-pointer">
+              {avatarPreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={avatarPreview}
+                  alt={form.fullName}
+                  className="h-24 w-24 rounded-2xl object-cover border-2 border-ochre/60 shadow-md transition-transform group-hover:scale-105"
+                />
+              ) : (
+                <div className="h-24 w-24 rounded-2xl bg-ochre/15 text-ochre flex items-center justify-center font-display font-bold text-2xl shadow-sm border border-sand/30 transition-transform group-hover:scale-105">
+                  {form.fullName.substring(0, 2).toUpperCase()}
+                </div>
+              )}
+              <label className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-forest-green/80 text-ivory text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer p-1">
+                <span>Upload Photo</span>
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/jpg"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+              </label>
             </div>
+            <p className="text-[10px] text-forest-green/45 font-semibold mt-2">Click photo to update avatar</p>
             
             <h2 className="font-display text-xl font-bold text-forest-green mt-4">{form.fullName}</h2>
             <p className="text-xs text-forest-green/55 mt-1 font-semibold flex items-center gap-1">

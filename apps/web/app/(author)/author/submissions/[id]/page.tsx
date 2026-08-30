@@ -60,10 +60,33 @@ const MOCK_REVIEWS = [
   }
 ];
 
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
+
 export default function SubmissionDetailPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const s = DEMO_SUBMISSIONS.find(x => x.id === id) ?? DEMO_SUBMISSIONS[0];
-  const timeline = TIMELINE[s.id] ?? TIMELINE['MS-2025-012'];
+  const { submissions } = useSubmissionsStore();
+  const s = submissions.find(x => x.id === id) ?? {
+    id: id || 'MS-2026-0001',
+    title: 'Manuscript Abstract',
+    journal: 'VJLS',
+    status: 'SCREENING' as const,
+    currentVersion: 1,
+    daysInPipeline: 1,
+    submittedDate: new Date().toISOString().split('T')[0],
+    abstract: 'Manuscript abstract in evaluation by editorial board.',
+    author: 'Author',
+    affiliation: 'Institution',
+    reviewerCount: 0,
+    editorName: 'Prof. Shital R Kalekar',
+    keywords: ['Academic', 'Research'],
+    paymentStatus: 'pending' as const,
+  };
+  const timeline = TIMELINE[s.id] ?? [
+    { label: 'Abstract Submitted', date: s.submittedDate, desc: 'Author submitted initial manuscript abstract proposal.', completed: true },
+    { label: 'Editorial Screening', desc: 'Editor evaluating manuscript suitability and domain reviewers.', completed: s.status !== 'SCREENING' },
+    { label: 'Under Peer Review', desc: 'Peer reviewers assigned and reports evaluated.', completed: ['UNDER REVIEW', 'REVISION', 'ACCEPTED', 'PUBLISHED'].includes(s.status) },
+    { label: 'Decision Recorded', desc: 'Editorial decision issued.', completed: ['ACCEPTED', 'PUBLISHED'].includes(s.status) },
+  ];
 
   const needsPayment = s.status === 'ACCEPTED' && s.paymentStatus === 'pending';
   const needsRevision = s.status === 'REVISION';
@@ -172,7 +195,7 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
               {[
                 { label: 'Author', value: s.author, icon: User },
                 { label: 'Institution', value: s.affiliation, icon: BookOpen },
-                { label: 'Assigned Editor', value: s.editorName || 'Not Assigned', icon: User },
+                { label: 'Assigned Editor', value: (s as any).assignedEditorName || (s as any).editorName || 'Not Assigned', icon: User },
                 { label: 'Peer Reviewers', value: `${s.reviewerCount} assigned`, icon: MessageSquare },
                 { label: 'Submitted Date', value: s.submittedDate, icon: Calendar },
                 { label: 'Current Version', value: `v${s.currentVersion}`, icon: Clock }
@@ -276,7 +299,7 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
             <div className="flex flex-col gap-3">
               {[
                 { name: 'Manuscript_v1.0.pdf', size: '2.4 MB', date: s.submittedDate },
-                ...(s.status === 'PUBLISHED' ? [{ name: 'Published_Final.pdf', size: '1.8 MB', date: s.publishedDate }] : [])
+                ...(s.status === 'PUBLISHED' ? [{ name: 'Published_Final.pdf', size: '1.8 MB', date: (s as any).publishedDate || s.submittedDate }] : [])
               ].map((file, idx) => (
                 <div key={idx} className="rounded-xl border border-sand/20 bg-ivory/20 p-3 flex items-center justify-between gap-3 hover:bg-sand/10 transition-colors">
                   <div className="min-w-0">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuthStore } from '@/lib/stores/auth.store';
+import { useSubmissionsStore } from '@/lib/stores/submissions.store';
 import Link from 'next/link';
 import { 
   ClipboardList, Clock, CheckCircle, AlertCircle, ArrowRight, 
@@ -14,8 +15,25 @@ import { SectionHeader } from '@/components/reader/SectionHeader';
 
 export default function ReviewerDashboardPage() {
   const { user } = useAuthStore();
+  const { submissions } = useSubmissionsStore();
 
-  const activeAssignments = DEMO_REVIEW_ASSIGNMENTS;
+  const storeAssigned = submissions
+    .filter(s => s.assignedReviewers && s.assignedReviewers.length > 0)
+    .map(s => ({
+      id: `rev_asg_${s.id}`,
+      submissionId: s.id,
+      title: s.title,
+      journal: s.journal,
+      author: s.author,
+      assignedDate: s.submittedDate,
+      dueDate: '2026-09-20',
+      deadline: '2026-09-20',
+      daysLeft: 14,
+      status: s.status === 'UNDER REVIEW' ? 'IN PROGRESS' : s.status,
+      abstract: s.abstract,
+    }));
+
+  const activeAssignments = [...storeAssigned, ...DEMO_REVIEW_ASSIGNMENTS];
   const completedReviews = DEMO_COMPLETED_REVIEWS;
 
   // Timeline events for Reviewer Workspace
